@@ -11,12 +11,15 @@
             </div>
 
             {{-- Treatments --}}
-            <nav aria-label="{{ __('footer.treatments_heading') }}">
-                <h2 class="mb-3.5 text-xs font-bold uppercase tracking-[0.1em] text-white/50">{{ __('footer.treatments_heading') }}</h2>
-                @foreach (\App\Support\Navigation::footerTreatments() as $item)
-                    <a href="{{ $item['url'] }}" class="block py-1.5 text-sm transition-colors duration-150 hover:text-white">{{ $item['label'] }}</a>
-                @endforeach
-            </nav>
+            @php($footerTreatments = \App\Support\Navigation::footerTreatments())
+            @if ($footerTreatments !== [])
+                <nav aria-label="{{ __('footer.treatments_heading') }}">
+                    <h2 class="mb-3.5 text-xs font-bold uppercase tracking-[0.1em] text-white/50">{{ __('footer.treatments_heading') }}</h2>
+                    @foreach ($footerTreatments as $item)
+                        <a href="{{ $item['url'] }}" class="block py-1.5 text-sm transition-colors duration-150 hover:text-white">{{ $item['label'] }}</a>
+                    @endforeach
+                </nav>
+            @endif
 
             {{-- Company --}}
             <nav aria-label="{{ __('footer.company_heading') }}">
@@ -26,29 +29,17 @@
                 @endforeach
             </nav>
 
-            {{-- Newsletter --}}
+            {{-- Connect --}}
+            @php($footerSocial = \App\Models\SocialLink::published()->orderBy('sort_order')->get())
             <div>
-                <h2 class="mb-3.5 text-xs font-bold uppercase tracking-[0.1em] text-white/50">{{ __('footer.guide_heading') }}</h2>
-                <p class="mb-3 text-sm text-white/60">{{ __('footer.guide_text') }}</p>
-                {{-- TODO: point action to the newsletter route once built; app.js prevents submit until then. --}}
-                <form class="flex gap-2" action="#" method="post" data-newsletter>
-                    @csrf
-                    <label for="footer-email" class="sr-only">{{ __('forms.email_label') }}</label>
-                    <input
-                        id="footer-email"
-                        type="email"
-                        name="email"
-                        autocomplete="email"
-                        placeholder="{{ __('forms.email_placeholder') }}"
-                        class="h-11 flex-1 rounded-sm border border-white/20 bg-white/5 px-3 text-white placeholder:text-white/40"
-                    >
-                    <button type="submit" class="grid h-11 w-11 flex-none place-items-center rounded-sm bg-cyan-400 text-navy-900" aria-label="{{ __('forms.subscribe') }}">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                            <path d="M5 12h14M13 6l6 6-6 6" class="rtl:hidden" />
-                            <path d="M19 12H5M11 6l-6 6 6 6" class="hidden rtl:block" />
-                        </svg>
-                    </button>
-                </form>
+                <h2 class="mb-3.5 text-xs font-bold uppercase tracking-[0.1em] text-white/50">{{ __('footer.connect_heading') }}</h2>
+                <p class="mb-4 text-sm text-white/60">{{ __('footer.connect_text') }}</p>
+
+                @if ($footerSocial->isNotEmpty())
+                    <x-ui.social-links :links="$footerSocial" />
+                @else
+                    <x-ui.whatsapp-button variant="accent" />
+                @endif
             </div>
         </div>
 

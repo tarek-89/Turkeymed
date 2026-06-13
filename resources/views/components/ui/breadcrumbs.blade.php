@@ -16,7 +16,7 @@
     ];
 @endphp
 
-<script type="application/ld+json">{!! json_encode($jsonLd, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}</script>
+<script type="application/ld+json">{!! json_encode($jsonLd, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) !!}</script>
 
 <nav aria-label="{{ __('common.breadcrumb_label') }}" {{ $attributes->merge(['class' => 'flex flex-wrap items-center gap-2 text-sm text-muted']) }}>
     @foreach ($items as $item)

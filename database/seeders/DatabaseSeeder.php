@@ -21,6 +21,7 @@ class DatabaseSeeder extends Seeder
         );
 
         $this->call(ServiceCategorySeeder::class);
+        $this->call(NavCategorySeeder::class);
         $this->call(AboutContentSeeder::class);
         $this->call(ContactContentSeeder::class);
         $this->call(SocialLinkSeeder::class);

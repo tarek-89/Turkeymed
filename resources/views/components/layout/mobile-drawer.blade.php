@@ -22,6 +22,23 @@
             >&times;</button>
         </div>
 
+        @foreach (\App\Support\Navigation::treatmentMenu() as $category)
+            <details class="border-b border-white/10">
+                <summary class="flex cursor-pointer items-center justify-between py-4 text-[1.3rem] font-bold marker:content-none [&::-webkit-details-marker]:hidden">
+                    {{ $category['label'] }}
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="transition-transform duration-150 [details[open]>summary>&]:rotate-180">
+                        <path d="m6 9 6 6 6-6" />
+                    </svg>
+                </summary>
+                <div class="flex flex-col gap-1 pb-3 ps-3">
+                    <a href="{{ $category['url'] }}" class="py-1.5 text-base font-semibold text-cyan-200">{{ __('nav.view_all') }}</a>
+                    @foreach ($category['services'] as $service)
+                        <a href="{{ $service['url'] }}" class="py-1.5 text-base text-white/85">{{ $service['label'] }}</a>
+                    @endforeach
+                </div>
+            </details>
+        @endforeach
+
         @foreach (\App\Support\Navigation::primary() as $item)
             <a href="{{ $item['url'] }}" class="border-b border-white/10 py-4 text-[1.3rem] font-bold">{{ $item['label'] }}</a>
         @endforeach

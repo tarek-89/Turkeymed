@@ -24,4 +24,8 @@ return [
     // Public contact email address.
     'email' => env('SITE_EMAIL', 'hello@turkeymed.net'),
 
+    // Optional allow-list (comma-separated) of emails permitted into the
+    // Filament admin panel. Leave empty to allow any existing user.
+    'admin_emails' => env('ADMIN_EMAILS', ''),
+
 ];

@@ -32,7 +32,7 @@
             ['label' => $service->title],
         ]));
     @endphp
-    <script type="application/ld+json">{!! json_encode(array_filter($jsonLd, fn ($v) => $v !== null), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}</script>
+    <script type="application/ld+json">{!! json_encode(array_filter($jsonLd, fn ($v) => $v !== null), JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) !!}</script>
 
     <x-ui.container>
         <x-ui.breadcrumbs :items="$breadcrumbs" class="pt-5" />

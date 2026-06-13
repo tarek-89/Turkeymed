@@ -2,8 +2,47 @@
 
 namespace App\Support;
 
+use App\Models\ServiceCategory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+
 class Navigation
 {
+    /**
+     * Treatment mega-menu: each service category that has at least one
+     * published service in the current locale, with its services as a
+     * dropdown. Eager-loaded to avoid N+1; categories without published
+     * services are omitted.
+     *
+     * @return list<array{label: string, url: string, services: list<array{label: string, url: string}>}>
+     */
+    public static function treatmentMenu(): array
+    {
+        $locale = app()->getLocale();
+
+        return ServiceCategory::query()
+            ->with(['services' => fn (HasMany $query) => $query
+                ->where('status', 'publish')
+                ->whereNotNull('published_at')
+                ->where('published_at', '<=', now())
+                ->where('language', $locale)
+                ->orderBy('title')])
+            ->orderBy('sort_order')
+            ->orderBy('name')
+            ->get()
+            ->map(fn (ServiceCategory $category): array => [
+                'label' => $category->name,
+                'url' => $category->url($locale),
+                'services' => $category->services
+                    ->map(fn ($service): array => [
+                        'label' => $service->title,
+                        'url' => $service->url(),
+                    ])->all(),
+            ])
+            ->filter(fn (array $category): bool => $category['services'] !== [])
+            ->values()
+            ->all();
+    }
+
     /**
      * URL of the localized homepage (root for English, /{code} otherwise).
      */
@@ -61,27 +100,27 @@ class Navigation
     public static function primary(): array
     {
         return self::withActiveState([
-            ['label' => __('nav.treatments'), 'url' => '#'],
             ['label' => __('nav.about'), 'url' => self::aboutUrl()],
-            ['label' => __('nav.results'), 'url' => '#'],
             ['label' => __('nav.blog'), 'url' => self::blogUrl()],
             ['label' => __('nav.contact'), 'url' => self::contactUrl()],
         ]);
     }
 
     /**
-     * Footer "Treatments" column.
+     * Footer "Treatments" column — the live service categories that have at
+     * least one published service in the current locale, linking to their
+     * category pages. Falls back to nothing (column hides) when empty.
      *
      * @return list<array{label: string, url: string}>
      */
     public static function footerTreatments(): array
     {
-        return [
-            ['label' => __('footer.links.hair_transplant'), 'url' => '#'],
-            ['label' => __('footer.links.dental'), 'url' => '#'],
-            ['label' => __('footer.links.eye_surgery'), 'url' => '#'],
-            ['label' => __('footer.links.packages'), 'url' => '#'],
-        ];
+        return collect(self::treatmentMenu())
+            ->map(fn (array $category): array => [
+                'label' => $category['label'],
+                'url' => $category['url'],
+            ])
+            ->all();
     }
 
     /**
@@ -93,7 +132,6 @@ class Navigation
     {
         return [
             ['label' => __('footer.links.about_us'), 'url' => self::aboutUrl()],
-            ['label' => __('footer.links.results'), 'url' => '#'],
             ['label' => __('footer.links.blog'), 'url' => self::blogUrl()],
             ['label' => __('footer.links.contact'), 'url' => self::contactUrl()],
         ];

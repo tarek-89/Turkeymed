@@ -28,10 +28,10 @@ class PatientResultTest extends TestCase
         $response = $this->get('/'.$service->slug);
 
         $response->assertOk();
-        $response->assertSee(__('results.eyebrow'));
-        $response->assertSee(__('results.consent_note'));
-        $response->assertSee(trans_choice('results.grafts', 4200, ['count' => number_format(4200)]));
-        $response->assertSee(trans_choice('results.months', 12, ['count' => 12]));
+        $response->assertSee(__('patient_results.eyebrow'));
+        $response->assertSee(__('patient_results.consent_note'));
+        $response->assertSee(trans_choice('patient_results.grafts', 4200, ['count' => number_format(4200)]));
+        $response->assertSee(trans_choice('patient_results.months', 12, ['count' => 12]));
     }
 
     public function test_results_section_is_hidden_when_there_are_none(): void
@@ -42,7 +42,7 @@ class PatientResultTest extends TestCase
         $response = $this->get('/'.$service->slug);
 
         $response->assertOk();
-        $response->assertDontSee(__('results.consent_note'));
+        $response->assertDontSee(__('patient_results.consent_note'));
     }
 
     public function test_unpublished_and_unconsented_results_never_appear(): void
@@ -58,7 +58,7 @@ class PatientResultTest extends TestCase
         $response = $this->get('/'.$service->slug);
 
         $response->assertOk();
-        $response->assertDontSee(__('results.consent_note'));
+        $response->assertDontSee(__('patient_results.consent_note'));
     }
 
     public function test_results_pinned_to_a_service_only_show_on_that_service(): void

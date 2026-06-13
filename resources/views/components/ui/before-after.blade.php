@@ -21,14 +21,14 @@
     {{-- After (base layer) --}}
     <img src="{{ $after }}" alt="{{ $alt }}" class="absolute inset-0 h-full w-full object-cover" loading="lazy">
     <span class="absolute right-3 top-3 z-10 rounded-full bg-navy-900/70 px-3 py-1 font-mono text-xs text-white">
-        {{ $afterLabel ?? __('results.after') }}
+        {{ $afterLabel ?? __('patient_results.after') }}
     </span>
 
     {{-- Before (clipped overlay) --}}
     <div class="absolute inset-0 [clip-path:inset(0_calc(100%-var(--ba-pos))_0_0)]">
         <img src="{{ $before }}" alt="" aria-hidden="true" class="absolute inset-0 h-full w-full object-cover" loading="lazy">
         <span class="absolute bottom-3 left-3 rounded-full bg-navy-900/70 px-3 py-1 font-mono text-xs text-white">
-            {{ $beforeLabel ?? __('results.before') }}
+            {{ $beforeLabel ?? __('patient_results.before') }}
         </span>
     </div>
 
@@ -48,7 +48,7 @@
         max="100"
         step="1"
         value="50"
-        aria-label="{{ __('results.compare_aria') }}"
+        aria-label="{{ __('patient_results.compare_aria') }}"
         class="ba-range absolute inset-0 z-20 h-full w-full cursor-ew-resize appearance-none bg-transparent"
     >
 </div>

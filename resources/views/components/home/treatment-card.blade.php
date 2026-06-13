@@ -8,7 +8,7 @@
     $description = $card->translate('description');
     $badge = $card->translate('badge');
     $footnote = $card->translate('footnote');
-    $href = $card->url ?: \App\Support\Navigation::contactUrl();
+    $href = $card->url ? \App\Support\Url::safe($card->url) : \App\Support\Navigation::contactUrl();
 @endphp
 
 @if ($card->variant === 'feature')

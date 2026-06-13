@@ -15,12 +15,12 @@
                     @php
                         $headline = implode(' · ', array_filter([
                             $result->grafts_count
-                                ? trans_choice('results.grafts', $result->grafts_count, ['count' => number_format($result->grafts_count)])
+                                ? trans_choice('patient_results.grafts', $result->grafts_count, ['count' => number_format($result->grafts_count)])
                                 : null,
                             $result->months_to_result
-                                ? trans_choice('results.months', $result->months_to_result, ['count' => $result->months_to_result])
+                                ? trans_choice('patient_results.months', $result->months_to_result, ['count' => $result->months_to_result])
                                 : null,
-                        ])) ?: __('results.heading');
+                        ])) ?: __('patient_results.heading');
                     @endphp
 
                     <article class="w-full flex-none snap-start">
@@ -30,22 +30,22 @@
                                 :after="$result->afterImageUrl()"
                                 :before-label="$result->before_label"
                                 :after-label="$result->after_label"
-                                :alt="__('results.eyebrow').' — '.$headline"
+                                :alt="__('patient_results.eyebrow').' — '.$headline"
                             />
 
                             <div>
-                                <x-ui.eyebrow class="block">{{ __('results.eyebrow') }}</x-ui.eyebrow>
+                                <x-ui.eyebrow class="block">{{ __('patient_results.eyebrow') }}</x-ui.eyebrow>
 
                                 <x-ui.heading level="h2" class="mt-2.5">{{ $headline }}</x-ui.heading>
 
-                                <p class="lead mt-3.5">{{ __('results.consent_note') }}</p>
+                                <p class="lead mt-3.5">{{ __('patient_results.consent_note') }}</p>
 
                                 @if ($results->count() > 1)
                                     <div class="mt-7 flex gap-2.5">
                                         <button
                                             type="button"
                                             data-carousel-prev
-                                            aria-label="{{ __('results.prev') }}"
+                                            aria-label="{{ __('patient_results.prev') }}"
                                             class="grid h-11 w-11 place-items-center rounded-full border border-line bg-white text-ink transition duration-150 hover:border-navy-700"
                                         >
                                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="rtl:-scale-x-100">
@@ -55,7 +55,7 @@
                                         <button
                                             type="button"
                                             data-carousel-next
-                                            aria-label="{{ __('results.next') }}"
+                                            aria-label="{{ __('patient_results.next') }}"
                                             class="grid h-11 w-11 place-items-center rounded-full border border-line bg-white text-ink transition duration-150 hover:border-navy-700"
                                         >
                                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="rtl:-scale-x-100">
