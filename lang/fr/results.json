@@ -1,0 +1,12 @@
+{
+  "eyebrow": "Résultats réels",
+  "heading": "Avant / après",
+  "consent_note": "Le résultat d'un patient consentant, issu d'une clinique partenaire. Faites glisser la poignée pour comparer — jamais de banque d'images, jamais retouché. Chaque image de la galerie est publiée avec le consentement écrit du patient.",
+  "before": "Avant",
+  "after": "Après",
+  "grafts": "{1}:count greffon|[2,*]:count greffons",
+  "months": "{1}:count mois|[2,*]:count mois",
+  "compare_aria": "Curseur de comparaison — faites glisser pour révéler l'avant et l'après",
+  "prev": "Résultat précédent",
+  "next": "Résultat suivant"
+}

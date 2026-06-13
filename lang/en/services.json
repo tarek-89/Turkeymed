@@ -1,0 +1,14 @@
+{
+  "consultation_title": "Talk to a coordinator",
+  "consultation_text": "Free, no obligation. Reply within 24 hours, in your language.",
+  "consultation_cta": "Request consultation",
+  "related_heading": "Related services",
+  "assessment_title": "Get your free assessment",
+  "assessment_text": "Send a few photos and we'll prepare your treatment plan and all-inclusive price — within 24 hours.",
+  "assessment_cta": "Start free assessment",
+  "from": "From",
+  "category_count": "{0}No procedures yet|{1}1 procedure available|[2,*]:count procedures available",
+  "category_empty": "No services in this category yet — check back soon, or ask us directly.",
+  "category_meta_description": ":category in Istanbul — accredited surgeons, transparent all-inclusive pricing and multilingual care, handled end to end.",
+  "view_service": "View details"
+}

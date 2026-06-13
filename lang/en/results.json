@@ -1,0 +1,12 @@
+{
+  "eyebrow": "Real results",
+  "heading": "Before & after",
+  "consent_note": "A consented patient result from a partner clinic. Drag the handle to compare — never stock, never retouched. Every gallery image is published with written patient consent.",
+  "before": "Before",
+  "after": "After",
+  "grafts": "{1}:count graft|[2,*]:count grafts",
+  "months": "{1}:count month|[2,*]:count months",
+  "compare_aria": "Comparison slider — drag to reveal before and after",
+  "prev": "Previous result",
+  "next": "Next result"
+}

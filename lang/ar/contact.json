@@ -1,0 +1,12 @@
+{
+  "method_whatsapp": "واتساب",
+  "method_call": "اتصل بنا",
+  "method_email": "البريد الإلكتروني",
+  "offices_eyebrow": "مكاتبنا",
+  "offices_title": "تجدنا حول العالم",
+  "office_count": "{1}مكتب واحد|{2}مكتبان|[3,10]:count مكاتب|[11,*]:count مكتباً",
+  "get_directions": "الاتجاهات",
+  "call": "اتصل",
+  "message_eyebrow": "أرسل لنا رسالة",
+  "follow_us": "تابعنا"
+}

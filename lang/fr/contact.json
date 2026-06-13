@@ -1,0 +1,12 @@
+{
+  "method_whatsapp": "WhatsApp",
+  "method_call": "Appelez-nous",
+  "method_email": "E-mail",
+  "offices_eyebrow": "Nos bureaux",
+  "offices_title": "Retrouvez-nous dans le monde",
+  "office_count": "{1}1 bureau|[2,*]:count bureaux",
+  "get_directions": "Itinéraire",
+  "call": "Appeler",
+  "message_eyebrow": "Envoyez-nous un message",
+  "follow_us": "Suivez-nous"
+}

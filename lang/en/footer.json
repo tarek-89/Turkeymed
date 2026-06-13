@@ -1,0 +1,21 @@
+{
+  "tagline": "World-class medical care in Istanbul, handled end to end.",
+  "treatments_heading": "Treatments",
+  "company_heading": "Company",
+  "guide_heading": "Get our guide",
+  "guide_text": "Free checklist in your inbox.",
+  "links": {
+    "hair_transplant": "Hair Transplant",
+    "dental": "Dental",
+    "eye_surgery": "Eye Surgery",
+    "packages": "Packages",
+    "about_us": "About us",
+    "results": "Results",
+    "blog": "Blog",
+    "contact": "Contact"
+  },
+  "rights": "© :year TurkeyMed.net",
+  "privacy": "Privacy",
+  "terms": "Terms",
+  "cookies": "Cookies"
+}

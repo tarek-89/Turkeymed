@@ -1,0 +1,14 @@
+{
+  "consultation_title": "Habla con un coordinador",
+  "consultation_text": "Gratis y sin compromiso. Respuesta en 24 horas, en tu idioma.",
+  "consultation_cta": "Solicitar consulta",
+  "related_heading": "Servicios relacionados",
+  "assessment_title": "Obtén tu evaluación gratuita",
+  "assessment_text": "Envía algunas fotos y prepararemos tu plan de tratamiento y precio todo incluido — en 24 horas.",
+  "assessment_cta": "Iniciar evaluación gratuita",
+  "from": "Desde",
+  "category_count": "{0}Aún no hay procedimientos|{1}1 procedimiento disponible|[2,*]:count procedimientos disponibles",
+  "category_empty": "Aún no hay servicios en esta categoría — vuelve pronto o contáctanos directamente.",
+  "category_meta_description": ":category en Estambul — cirujanos acreditados, precios todo incluido transparentes y atención multilingüe, de principio a fin.",
+  "view_service": "Ver detalles"
+}

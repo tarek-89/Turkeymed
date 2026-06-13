@@ -1,0 +1,12 @@
+{
+  "eyebrow": "Resultados reales",
+  "heading": "Antes y después",
+  "consent_note": "Resultado de un paciente con consentimiento, de una clínica asociada. Arrastra el control para comparar — nunca de stock, nunca retocado. Cada imagen de la galería se publica con el consentimiento escrito del paciente.",
+  "before": "Antes",
+  "after": "Después",
+  "grafts": "{1}:count injerto|[2,*]:count injertos",
+  "months": "{1}:count mes|[2,*]:count meses",
+  "compare_aria": "Control de comparación — arrastra para ver el antes y el después",
+  "prev": "Resultado anterior",
+  "next": "Resultado siguiente"
+}
