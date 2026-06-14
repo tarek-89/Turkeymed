@@ -30,6 +30,7 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
+            ->profile()
             ->brandName(config('site.brand'))
             ->font('Plus Jakarta Sans')
             // Use the full viewport width so wide tables (Posts) aren't cut off

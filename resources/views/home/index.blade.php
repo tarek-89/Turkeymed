@@ -45,7 +45,7 @@
                         alt="{{ $heroTitle }}"
                         loading="eager"
                         fetchpriority="high"
-                        class="block h-auto max-h-[320px] w-auto rounded-2xl ring-1 ring-white/15 shadow-[0_24px_60px_-20px_rgba(0,0,0,0.55)] sm:max-h-[480px]"
+                        class="block h-auto max-h-[320px] w-auto max-w-full rounded-2xl ring-1 ring-white/15 shadow-[0_24px_60px_-20px_rgba(0,0,0,0.55)] sm:max-h-[480px]"
                     >
                 @endif
 
@@ -137,16 +137,16 @@
                                 {{-- Fixed height + auto width keeps each image's true ratio (no crop). --}}
                                 <x-ui.slider>
                                     @foreach ($galleryImages as $image)
-                                        <img src="{{ $image }}" alt="{{ $gallery->translate('title') }}" loading="lazy" class="h-72 w-auto flex-none snap-center rounded-2xl border border-line sm:h-[440px]">
+                                        <img src="{{ $image }}" alt="{{ $gallery->translate('title') }}" loading="lazy" data-lightbox class="h-72 w-auto flex-none snap-center rounded-2xl border border-line sm:h-[440px]">
                                     @endforeach
                                 </x-ui.slider>
                             @elseif (count($galleryImages) === 1)
-                                <img src="{{ $galleryImages[0] }}" alt="{{ $gallery->translate('title') }}" loading="lazy" class="mx-auto max-h-[440px] w-auto rounded-2xl border border-line">
+                                <img src="{{ $galleryImages[0] }}" alt="{{ $gallery->translate('title') }}" loading="lazy" data-lightbox class="mx-auto max-h-[440px] w-auto max-w-full rounded-2xl border border-line">
                             @endif
                         @else
                             <div class="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
                                 @foreach ($galleryImages as $image)
-                                    <img src="{{ $image }}" alt="{{ $gallery->translate('title') }}" width="800" height="800" loading="lazy" class="aspect-square w-full rounded-lg border border-line object-cover">
+                                    <img src="{{ $image }}" alt="{{ $gallery->translate('title') }}" width="800" height="800" loading="lazy" data-lightbox class="aspect-square w-full rounded-lg border border-line object-cover">
                                 @endforeach
                             </div>
                         @endif

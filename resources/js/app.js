@@ -162,6 +162,45 @@ function initSite() {
     document.querySelectorAll('form[data-newsletter]').forEach((form) => {
         form.addEventListener('submit', (e) => e.preventDefault());
     });
+
+    /* ---- Lightbox: click a [data-lightbox] image to view it full-size ---- */
+    const lightboxImages = document.querySelectorAll('[data-lightbox]');
+    if (lightboxImages.length) {
+        const overlay = document.createElement('div');
+        overlay.className = 'fixed inset-0 z-[200] hidden items-center justify-center bg-black/90 p-4';
+        overlay.setAttribute('aria-hidden', 'true');
+        overlay.innerHTML =
+            '<button type="button" aria-label="Close" class="absolute end-4 top-4 grid h-11 w-11 place-items-center rounded-full bg-white/15 text-3xl leading-none text-white transition hover:bg-white/25">&times;</button>' +
+            '<img alt="" class="max-h-[90vh] max-w-[92vw] rounded-lg object-contain shadow-2xl">';
+        document.body.appendChild(overlay);
+        const overlayImg = overlay.querySelector('img');
+
+        const openLightbox = (src, alt) => {
+            overlayImg.src = src;
+            overlayImg.alt = alt || '';
+            overlay.classList.remove('hidden');
+            overlay.classList.add('flex');
+            document.body.style.overflow = 'hidden';
+        };
+        const closeLightbox = () => {
+            overlay.classList.add('hidden');
+            overlay.classList.remove('flex');
+            document.body.style.overflow = '';
+            overlayImg.removeAttribute('src');
+        };
+
+        lightboxImages.forEach((el) => {
+            el.classList.add('cursor-zoom-in');
+            el.addEventListener('click', () => openLightbox(el.currentSrc || el.src, el.alt));
+        });
+        // Click anywhere except the image (or press Esc) closes.
+        overlay.addEventListener('click', (e) => {
+            if (e.target !== overlayImg) closeLightbox();
+        });
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && overlay.classList.contains('flex')) closeLightbox();
+        });
+    }
 }
 
 if (document.readyState === 'loading') {
