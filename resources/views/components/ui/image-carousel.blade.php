@@ -7,6 +7,16 @@
 
 @php
     $images = array_values(array_filter($images));
+
+    // Intrinsic dimensions matching the aspect-ratio class, so the browser
+    // reserves space and avoids layout shift (CLS).
+    [$imgWidth, $imgHeight] = [
+        'aspect-[4/3]' => [1200, 900],
+        'aspect-video' => [1600, 900],
+        'aspect-[16/9]' => [1600, 900],
+        'aspect-[16/10]' => [1600, 1000],
+        'aspect-square' => [1200, 1200],
+    ][$ratio] ?? [1200, 900];
 @endphp
 
 @if (count($images) === 0)
@@ -16,6 +26,8 @@
     <img
         src="{{ $images[0] }}"
         alt="{{ $alt }}"
+        width="{{ $imgWidth }}"
+        height="{{ $imgHeight }}"
         loading="lazy"
         {{ $attributes->merge(['class' => $ratio.' w-full rounded-2xl border border-line object-cover']) }}
     >
@@ -27,6 +39,8 @@
                     src="{{ $image }}"
                     alt="{{ $loop->first ? $alt : '' }}"
                     @if (! $loop->first) aria-hidden="true" @endif
+                    width="{{ $imgWidth }}"
+                    height="{{ $imgHeight }}"
                     loading="lazy"
                     class="{{ $ratio }} w-full flex-none snap-start border border-line object-cover"
                 >

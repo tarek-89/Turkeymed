@@ -25,7 +25,7 @@ class NotFoundPageTest extends TestCase
         $response->assertNotFound();
         $response->assertSee(__('errors.heading'));
         $response->assertSee(__('errors.back_home'));
-        $response->assertSee('<meta name="robots" content="noindex">', false);
+        $response->assertSee('name="robots" content="noindex', false);
     }
 
     public function test_popular_chips_show_only_categorized_services(): void

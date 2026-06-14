@@ -36,7 +36,7 @@ class SecurityTest extends TestCase
             'title' => 'Hair </script><script>alert(1)</script>',
         ]);
 
-        $response = $this->get('/'.$post->slug);
+        $response = $this->get($post->url());
 
         $response->assertOk();
         // The raw breakout sequence must not appear; < and > are hex-escaped in JSON-LD.

@@ -9,30 +9,22 @@
     body-class="max-lg:pb-24"
 >
     @php
-        $jsonLd = [
-            '@context' => 'https://schema.org',
-            '@type' => 'MedicalProcedure',
-            'name' => $service->title,
-            'inLanguage' => $service->language,
-            'url' => $service->url(),
-            'description' => $service->metaDescription(),
-            'image' => $service->featuredImageUrl(),
-            'provider' => [
-                '@type' => 'MedicalOrganization',
-                'name' => config('app.name'),
-                'url' => url('/'),
-            ],
-        ];
-
         $breadcrumbs = array_values(array_filter([
             ['label' => __('common.home'), 'href' => \App\Support\Navigation::homeUrl()],
+            ['label' => __('nav.treatments'), 'href' => \App\Support\Navigation::servicesUrl()],
             $service->category
-                ? ['label' => $service->category->name, 'href' => $service->category->url($service->language)]
+                ? ['label' => $service->category->name, 'href' => $service->category->serviceUrl($service->language)]
                 : null,
             ['label' => $service->title],
         ]));
     @endphp
-    <script type="application/ld+json">{!! json_encode(array_filter($jsonLd, fn ($v) => $v !== null), JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) !!}</script>
+    <script type="application/ld+json">{!! json_encode(\App\Support\Seo\SchemaBuilder::medicalWebPage($service), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) !!}</script>
+
+    @if ($service->featuredImageUrl())
+        @push('head')
+            <link rel="preload" as="image" href="{{ $service->featuredImageUrl() }}" fetchpriority="high">
+        @endpush
+    @endif
 
     <x-ui.container>
         <x-ui.breadcrumbs :items="$breadcrumbs" class="pt-5" />
@@ -41,7 +33,7 @@
     {{-- Hero --}}
     <x-ui.section :tight="true">
         <x-ui.page-hero :eyebrow="$service->category?->name" :title="$service->title">
-            {{ $service->excerpt }}
+            {{ $service->summary ?: $service->excerpt }}
 
             <x-slot:actions>
                 <x-ui.button :href="\App\Support\Navigation::contactUrl()" variant="primary">
@@ -54,7 +46,13 @@
                 <x-slot:media>
                     <img
                         src="{{ $service->featuredImageUrl() }}"
+                        @if ($service->featuredImageSrcset())
+                            srcset="{{ $service->featuredImageSrcset() }}"
+                            sizes="(max-width: 768px) 100vw, 560px"
+                        @endif
                         alt="{{ $service->title }}"
+                        width="1200"
+                        height="900"
                         class="aspect-[4/3] w-full rounded-xl border border-line object-cover"
                         loading="eager"
                         fetchpriority="high"
@@ -67,6 +65,15 @@
     {{-- Body + sidebar --}}
     <x-ui.section :tight="true">
         <x-service.layout>
+            <x-content.byline
+                class="mb-6"
+                :author="$service->authorProfile"
+                :author-name="$service->author"
+                :reviewer="$service->reviewer"
+                :updated="$service->last_reviewed_at ?? $service->updated_at"
+                :language="$service->language"
+            />
+
             <x-ui.prose>
                 {!! $service->body !!}
             </x-ui.prose>
@@ -80,6 +87,25 @@
 
     {{-- Real results: before/after carousel (hidden until results exist) --}}
     <x-service.results :results="$results" />
+
+    @if ($service->faqList())
+        <x-ui.section :tight="true">
+            <x-content.faq :items="$service->faqList()" />
+        </x-ui.section>
+    @endif
+
+    @php($relatedPosts = $service->relatedPosts())
+    @if ($relatedPosts->isNotEmpty())
+        <x-ui.section :tight="true">
+            <x-ui.section-heading :title="__('content.related_articles')" level="h2" />
+
+            <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                @foreach ($relatedPosts as $relatedPost)
+                    <x-blog.post-card :post="$relatedPost" />
+                @endforeach
+            </div>
+        </x-ui.section>
+    @endif
 
     {{-- Bottom CTA --}}
     <x-ui.section>

@@ -90,6 +90,18 @@ class Navigation
     }
 
     /**
+     * URL of the localized services index.
+     */
+    public static function servicesUrl(): string
+    {
+        $locale = app()->getLocale();
+
+        return $locale === Locale::DEFAULT
+            ? route('services.index')
+            : route('services.index.localized', $locale);
+    }
+
+    /**
      * Primary header / drawer navigation.
      *
      * TODO: replace the '#' placeholders with route() calls as each section

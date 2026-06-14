@@ -37,11 +37,20 @@
                 </div>
             </div>
 
-            <div class="relative">
-                <x-ui.image-carousel :images="$heroImages" :alt="$heroTitle" ratio="aspect-[4/3]" />
+            <div class="relative mx-auto w-fit">
+                @if (count($heroImages) >= 1)
+                    {{-- Natural ratio, height-capped so the hero keeps its size; rounded with a soft lift. --}}
+                    <img
+                        src="{{ $heroImages[0] }}"
+                        alt="{{ $heroTitle }}"
+                        loading="eager"
+                        fetchpriority="high"
+                        class="block h-auto max-h-[320px] w-auto rounded-2xl ring-1 ring-white/15 shadow-[0_24px_60px_-20px_rgba(0,0,0,0.55)] sm:max-h-[480px]"
+                    >
+                @endif
 
                 @if ($heroStatValue)
-                    <div class="absolute bottom-4 start-4 rounded-xl border border-white/20 bg-navy-900/60 px-5 py-3 backdrop-blur-md">
+                    <div class="absolute -bottom-4 -start-4 rounded-xl border border-white/20 bg-navy-900/70 px-5 py-3 shadow-lg backdrop-blur-md">
                         <div class="text-2xl font-extrabold text-white">{{ $heroStatValue }}</div>
                         @if ($heroStatLabel)
                             <div class="text-sm text-white/75">{{ $heroStatLabel }}</div>
@@ -122,12 +131,22 @@
                             {{ $gallery->translate('description') }}
                         </x-ui.section-heading>
 
+                        @php($galleryImages = $gallery->imageUrls())
                         @if ($gallery->layout === 'slider')
-                            <x-ui.image-carousel :images="$gallery->imageUrls()" :alt="$gallery->translate('title')" ratio="aspect-video" />
+                            @if (count($galleryImages) > 1)
+                                {{-- Fixed height + auto width keeps each image's true ratio (no crop). --}}
+                                <x-ui.slider>
+                                    @foreach ($galleryImages as $image)
+                                        <img src="{{ $image }}" alt="{{ $gallery->translate('title') }}" loading="lazy" class="h-72 w-auto flex-none snap-center rounded-2xl border border-line sm:h-[440px]">
+                                    @endforeach
+                                </x-ui.slider>
+                            @elseif (count($galleryImages) === 1)
+                                <img src="{{ $galleryImages[0] }}" alt="{{ $gallery->translate('title') }}" loading="lazy" class="mx-auto max-h-[440px] w-auto rounded-2xl border border-line">
+                            @endif
                         @else
                             <div class="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
-                                @foreach ($gallery->imageUrls() as $image)
-                                    <img src="{{ $image }}" alt="{{ $gallery->translate('title') }}" loading="lazy" class="aspect-square w-full rounded-lg border border-line object-cover">
+                                @foreach ($galleryImages as $image)
+                                    <img src="{{ $image }}" alt="{{ $gallery->translate('title') }}" width="800" height="800" loading="lazy" class="aspect-square w-full rounded-lg border border-line object-cover">
                                 @endforeach
                             </div>
                         @endif
@@ -141,11 +160,19 @@
     @if ($videos->isNotEmpty())
         <x-ui.section :tight="true">
             <x-ui.section-heading :eyebrow="__('home.videos_eyebrow')" :title="__('home.videos_title')" />
-            <div class="flex flex-wrap items-start gap-6">
-                @foreach ($videos as $video)
-                    <x-home.video :video="$video" class="{{ $video->kind === 'short' ? 'w-[300px]' : 'w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]' }}" />
-                @endforeach
-            </div>
+            @if ($videos->count() > 3)
+                <x-ui.slider>
+                    @foreach ($videos as $video)
+                        <x-home.video :video="$video" class="{{ $video->kind === 'short' ? 'w-[300px]' : 'w-[460px] max-w-[80vw]' }} flex-none snap-start" />
+                    @endforeach
+                </x-ui.slider>
+            @else
+                <div class="flex flex-wrap items-start justify-center gap-6">
+                    @foreach ($videos as $video)
+                        <x-home.video :video="$video" class="{{ $video->kind === 'short' ? 'w-[300px]' : 'w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]' }}" />
+                    @endforeach
+                </div>
+            @endif
         </x-ui.section>
     @endif
 
@@ -153,11 +180,19 @@
     @if ($instagramPosts->isNotEmpty())
         <x-ui.section :tight="true">
             <x-ui.section-heading :eyebrow="__('home.instagram_eyebrow')" :title="__('home.instagram_title')" />
-            <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                @foreach ($instagramPosts as $post)
-                    <div class="[&_.instagram-media]:!min-w-0 [&_.instagram-media]:!w-full">{!! $post->embed_code !!}</div>
-                @endforeach
-            </div>
+            @if ($instagramPosts->count() > 3)
+                <x-ui.slider>
+                    @foreach ($instagramPosts as $post)
+                        <div class="w-[340px] max-w-[85vw] flex-none snap-start [&_.instagram-media]:!min-w-0 [&_.instagram-media]:!w-full">{!! $post->embed_code !!}</div>
+                    @endforeach
+                </x-ui.slider>
+            @else
+                <div class="flex flex-wrap justify-center gap-6">
+                    @foreach ($instagramPosts as $post)
+                        <div class="w-full max-w-[340px] [&_.instagram-media]:!min-w-0 [&_.instagram-media]:!w-full">{!! $post->embed_code !!}</div>
+                    @endforeach
+                </div>
+            @endif
         </x-ui.section>
 
         @push('scripts')

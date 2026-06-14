@@ -25,7 +25,7 @@ class PatientResultTest extends TestCase
         $service = Service::factory()->inCategory($category)->create();
         PatientResult::factory()->inCategory($category)->create(['grafts_count' => 4200, 'months_to_result' => 12]);
 
-        $response = $this->get('/'.$service->slug);
+        $response = $this->get($service->url());
 
         $response->assertOk();
         $response->assertSee(__('patient_results.eyebrow'));
@@ -39,7 +39,7 @@ class PatientResultTest extends TestCase
         $category = ServiceCategory::factory()->create();
         $service = Service::factory()->inCategory($category)->create();
 
-        $response = $this->get('/'.$service->slug);
+        $response = $this->get($service->url());
 
         $response->assertOk();
         $response->assertDontSee(__('patient_results.consent_note'));
@@ -55,7 +55,7 @@ class PatientResultTest extends TestCase
         // Defence in depth: published flag set but consent missing — scope must still exclude it.
         PatientResult::factory()->inCategory($category)->create(['consent_confirmed' => false]);
 
-        $response = $this->get('/'.$service->slug);
+        $response = $this->get($service->url());
 
         $response->assertOk();
         $response->assertDontSee(__('patient_results.consent_note'));

@@ -11,6 +11,8 @@
                 src="{{ $post->featuredImageUrl() }}"
                 alt=""
                 aria-hidden="true"
+                width="64"
+                height="64"
                 class="h-16 w-16 flex-none rounded-md object-cover"
                 loading="lazy"
             >
@@ -38,7 +40,13 @@
     @if ($post->featuredImageUrl())
         <img
             src="{{ $post->featuredImageUrl() }}"
+            @if ($post->featuredImageSrcset())
+                srcset="{{ $post->featuredImageSrcset() }}"
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            @endif
             alt="{{ $post->title }}"
+            width="1600"
+            height="1000"
             class="mb-5 aspect-[16/10] w-full rounded-lg object-cover"
             loading="lazy"
         >

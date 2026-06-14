@@ -1,6 +1,7 @@
 <x-layout.app
     :title="__('posts.blog').' - '.config('site.brand')"
     :description="__('home.journal_title')"
+    :canonical="$posts->currentPage() > 1 ? url()->current().'?page='.$posts->currentPage() : url()->current()"
 >
     <x-ui.section :tight="true">
         <x-ui.section-heading :eyebrow="__('posts.blog')" :title="__('home.journal_title')" />

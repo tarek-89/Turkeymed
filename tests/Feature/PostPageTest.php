@@ -22,7 +22,7 @@ class PostPageTest extends TestCase
     {
         $post = Post::factory()->create();
 
-        $response = $this->get('/'.$post->slug);
+        $response = $this->get($post->url());
 
         $response->assertOk();
         $response->assertSee($post->title);
@@ -34,11 +34,11 @@ class PostPageTest extends TestCase
         $category = ServiceCategory::factory()->create(['name' => 'Hair Transplant Surgery']);
         $post = Post::factory()->inCategory($category)->create();
 
-        $response = $this->get('/'.$post->slug);
+        $response = $this->get($post->url());
 
         $response->assertOk();
         $response->assertSee('Hair Transplant Surgery');
-        $response->assertSee($category->url(), false);
+        $response->assertSee($category->blogUrl(), false);
     }
 
     public function test_related_posts_come_only_from_the_same_category(): void

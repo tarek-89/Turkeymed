@@ -11,8 +11,7 @@
     >
         <div class="mb-3.5 flex items-center justify-between">
             <span class="flex items-center gap-2.5 text-[1.2rem] font-extrabold text-white">
-                <x-layout.brand-mark />
-                {{ config('site.brand') }}
+                <x-layout.brand-lockup :dark="true" height="h-12" />
             </span>
             <button
                 type="button"

@@ -2,15 +2,19 @@
 
 namespace App\Models;
 
+use App\Observers\FeaturedImageObserver;
+use Database\Factories\ServiceFactory;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+#[ObservedBy([FeaturedImageObserver::class])]
 class Service extends Model
 {
-    /** @use HasFactory<\Database\Factories\ServiceFactory> */
+    /** @use HasFactory<ServiceFactory> */
     use HasFactory;
 
     protected $guarded = [];
@@ -22,6 +26,9 @@ class Service extends Model
             'is_elementor' => 'boolean',
             'published_at' => 'datetime',
             'wp_modified_at' => 'datetime',
+            'last_reviewed_at' => 'datetime',
+            'featured_image_meta' => 'array',
+            'faqs' => 'array',
         ];
     }
 
@@ -31,6 +38,18 @@ class Service extends Model
     public function category(): BelongsTo
     {
         return $this->belongsTo(ServiceCategory::class, 'service_category_id');
+    }
+
+    /** The credentialed author (preferred over the legacy `author` string). @return BelongsTo<Author, $this> */
+    public function authorProfile(): BelongsTo
+    {
+        return $this->belongsTo(Author::class, 'author_id');
+    }
+
+    /** The medical reviewer. @return BelongsTo<Author, $this> */
+    public function reviewer(): BelongsTo
+    {
+        return $this->belongsTo(Author::class, 'reviewer_id');
     }
 
     /* ---------------- Scopes ---------------- */
@@ -60,7 +79,7 @@ class Service extends Model
     public function translations(): Collection
     {
         if ($this->translation_group_id === null) {
-            return new Collection();
+            return new Collection;
         }
 
         return static::query()
@@ -83,12 +102,14 @@ class Service extends Model
 
     /* ---------------- URLs & SEO ---------------- */
 
-    /** Reuse the same language constants from Post. */
+    /** Public URL: /services/{category}/{slug} (uncategorized services use the "uncategorized" segment). */
     public function url(): string
     {
+        $category = $this->category?->slug ?? 'uncategorized';
+
         return $this->language === Post::DEFAULT_LANGUAGE
-            ? url('/'.$this->slug)
-            : url('/'.$this->language.'/'.$this->slug);
+            ? route('services.show', [$category, $this->slug])
+            : route('services.show.localized', [$this->language, $category, $this->slug]);
     }
 
     public function featuredImageUrl(): ?string
@@ -100,14 +121,71 @@ class Service extends Model
         return rtrim((string) config('filesystems.disks.r2.url'), '/').'/'.ltrim($this->featured_image, '/');
     }
 
+    /** Responsive WebP srcset built from generated variants, or null when there are none. */
+    public function featuredImageSrcset(): ?string
+    {
+        $variants = $this->featured_image_meta['variants'] ?? [];
+
+        if (! is_array($variants) || $variants === []) {
+            return null;
+        }
+
+        $base = rtrim((string) config('filesystems.disks.r2.url'), '/');
+
+        return collect($variants)
+            ->map(fn (string $path, int|string $width): string => $base.'/'.ltrim($path, '/').' '.$width.'w')
+            ->values()
+            ->implode(', ');
+    }
+
     public function metaTitle(): string
     {
-        return $this->meta_title ?: $this->title.' - '.config('app.name');
+        return $this->meta_title ?: str($this->title.' - '.config('app.name'))->limit(60, '')->toString();
     }
 
     public function metaDescription(): ?string
     {
-        return $this->meta_description ?: ($this->excerpt ? str($this->excerpt)->limit(155)->toString() : null);
+        if ($this->meta_description) {
+            return $this->meta_description;
+        }
+
+        $fallback = $this->summary ?: $this->excerpt;
+
+        return $fallback ? str($fallback)->limit(155)->toString() : null;
+    }
+
+    /**
+     * Cleaned list of FAQ entries (drops blanks).
+     *
+     * @return list<array{question: string, answer: string}>
+     */
+    public function faqList(): array
+    {
+        return collect($this->faqs ?? [])
+            ->filter(fn ($faq): bool => is_array($faq) && filled($faq['question'] ?? null) && filled($faq['answer'] ?? null))
+            ->map(fn (array $faq): array => ['question' => (string) $faq['question'], 'answer' => (string) $faq['answer']])
+            ->values()
+            ->all();
+    }
+
+    /**
+     * Blog posts in the same category — cross-links a treatment to articles.
+     *
+     * @return Collection<int, Post>
+     */
+    public function relatedPosts(int $limit = 3): Collection
+    {
+        if (! $this->service_category_id) {
+            return new Collection;
+        }
+
+        return Post::published()
+            ->with('category')
+            ->language($this->language)
+            ->where('service_category_id', $this->service_category_id)
+            ->orderByDesc('published_at')
+            ->limit($limit)
+            ->get();
     }
 
     /**
@@ -139,7 +217,7 @@ class Service extends Model
     public function relatedServices(int $limit = 6): Collection
     {
         if (! $this->service_category_id) {
-            return new Collection();
+            return new Collection;
         }
 
         return static::published()

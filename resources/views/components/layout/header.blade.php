@@ -11,8 +11,7 @@
             aria-label="{{ __('nav.primary_label') }}"
         >
             <a href="{{ \App\Support\Navigation::homeUrl() }}" class="flex items-center gap-2.5 text-[1.2rem] font-extrabold tracking-tight text-navy-700">
-                <x-layout.brand-mark />
-                {{ config('site.brand') }}
+                <x-layout.brand-lockup height="h-14" />
             </a>
 
             <div class="hidden items-center gap-6 text-[0.92rem] font-semibold text-ink-2 lg:flex">

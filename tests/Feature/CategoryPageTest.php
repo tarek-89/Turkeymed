@@ -24,7 +24,7 @@ class CategoryPageTest extends TestCase
         $category = ServiceCategory::factory()->create(['name' => 'Hair Transplant Surgery']);
         $services = Service::factory()->count(2)->inCategory($category)->create();
 
-        $response = $this->get('/category/'.$category->slug);
+        $response = $this->get('/services/'.$category->slug);
 
         $response->assertOk();
         $response->assertSee('Hair Transplant Surgery');
@@ -39,7 +39,7 @@ class CategoryPageTest extends TestCase
         $category = ServiceCategory::factory()->create();
         $draft = Service::factory()->inCategory($category)->draft()->create();
 
-        $response = $this->get('/category/'.$category->slug);
+        $response = $this->get('/services/'.$category->slug);
 
         $response->assertOk();
         $response->assertDontSee($draft->title);
@@ -49,7 +49,7 @@ class CategoryPageTest extends TestCase
     {
         $category = ServiceCategory::factory()->create();
 
-        $response = $this->get('/category/'.$category->slug);
+        $response = $this->get('/services/'.$category->slug);
 
         $response->assertOk();
         $response->assertSee(__('services.category_empty'));
@@ -62,7 +62,7 @@ class CategoryPageTest extends TestCase
         $post = Post::factory()->inCategory($category)->create();
         $otherPost = Post::factory()->create();
 
-        $response = $this->get('/category/'.$category->slug);
+        $response = $this->get('/services/'.$category->slug);
 
         $response->assertOk();
         $response->assertSee(__('posts.from_the_blog'));
@@ -76,7 +76,7 @@ class CategoryPageTest extends TestCase
         $category = ServiceCategory::factory()->create();
         Service::factory()->inCategory($category)->create();
 
-        $response = $this->get('/category/'.$category->slug);
+        $response = $this->get('/services/'.$category->slug);
 
         $response->assertOk();
         $response->assertDontSee(__('posts.from_the_blog'));
@@ -84,7 +84,7 @@ class CategoryPageTest extends TestCase
 
     public function test_unknown_category_returns_404(): void
     {
-        $response = $this->get('/category/does-not-exist');
+        $response = $this->get('/services/does-not-exist');
 
         $response->assertNotFound();
     }

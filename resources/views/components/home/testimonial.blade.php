@@ -22,7 +22,7 @@
 
     <figcaption class="mt-6 flex items-center gap-3">
         @if ($testimonial->avatarUrl())
-            <img src="{{ $testimonial->avatarUrl() }}" alt="" aria-hidden="true" class="h-11 w-11 flex-none rounded-full object-cover">
+            <img src="{{ $testimonial->avatarUrl() }}" alt="" aria-hidden="true" width="44" height="44" class="h-11 w-11 flex-none rounded-full object-cover">
         @else
             <span class="h-11 w-11 flex-none rounded-full {{ $featured ? 'bg-white/20' : 'bg-cyan-50' }}" aria-hidden="true"></span>
         @endif

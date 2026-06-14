@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
+use Database\Factories\ServiceCategoryFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class ServiceCategory extends Model
 {
-    /** @use HasFactory<\Database\Factories\ServiceCategoryFactory> */
+    /** @use HasFactory<ServiceCategoryFactory> */
     use HasFactory;
 
     protected $guarded = [];
@@ -26,12 +27,31 @@ class ServiceCategory extends Model
     }
 
     /**
-     * URL of the category listing for the given language.
+     * URL of the service category listing (/services/{slug}). Kept as the
+     * default url() because most callers (nav, footer) are service contexts.
      */
     public function url(string $language = Post::DEFAULT_LANGUAGE): string
+    {
+        return $this->serviceUrl($language);
+    }
+
+    /**
+     * URL of the service category listing: /services/{slug}.
+     */
+    public function serviceUrl(string $language = Post::DEFAULT_LANGUAGE): string
     {
         return $language === Post::DEFAULT_LANGUAGE
             ? route('services.category', $this->slug)
             : route('services.category.localized', [$language, $this->slug]);
+    }
+
+    /**
+     * URL of the blog category listing: /blog/{slug}.
+     */
+    public function blogUrl(string $language = Post::DEFAULT_LANGUAGE): string
+    {
+        return $language === Post::DEFAULT_LANGUAGE
+            ? route('posts.category', $this->slug)
+            : route('posts.category.localized', [$language, $this->slug]);
     }
 }

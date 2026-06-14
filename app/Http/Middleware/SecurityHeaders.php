@@ -22,6 +22,21 @@ class SecurityHeaders
     {
         $response = $next($request);
 
+        // Staging / subdomain kill-switch: when the site is not meant to be
+        // indexed, tell every crawler to stay away on EVERY response (pages,
+        // sitemap, feed, assets served through PHP). Set SITE_INDEXABLE=false.
+        if (! config('site.indexable', true)) {
+            $response->headers->set('X-Robots-Tag', 'noindex, nofollow, noarchive');
+        }
+
+        // The admin panel and Livewire endpoints are auth-gated tooling, not
+        // public pages. Applying the public CSP here (notably
+        // upgrade-insecure-requests) can break Filament's file uploader on
+        // non-HTTPS hosts, so leave those responses untouched.
+        if ($request->is('admin', 'admin/*', 'livewire/*')) {
+            return $response;
+        }
+
         // Skip non-HTML responses (file downloads, JSON APIs, etc.).
         $contentType = (string) $response->headers->get('Content-Type');
         if ($contentType !== '' && ! str_contains($contentType, 'text/html')) {

@@ -48,7 +48,13 @@
                         @if ($service->featuredImageUrl())
                             <img
                                 src="{{ $service->featuredImageUrl() }}"
+                                @if ($service->featuredImageSrcset())
+                                    srcset="{{ $service->featuredImageSrcset() }}"
+                                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                                @endif
                                 alt="{{ $service->title }}"
+                                width="1600"
+                                height="1000"
                                 class="mb-5 aspect-[16/10] w-full rounded-lg object-cover"
                                 loading="lazy"
                             >

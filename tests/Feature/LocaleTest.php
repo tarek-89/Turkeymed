@@ -33,9 +33,9 @@ class LocaleTest extends TestCase
 
     public function test_english_content_is_served_unprefixed_and_ltr(): void
     {
-        $this->makePost('en', 'hello-world');
+        $post = $this->makePost('en', 'hello-world');
 
-        $response = $this->get('/hello-world');
+        $response = $this->get($post->url());
 
         $response->assertOk();
         $response->assertSee('lang="en"', false);
@@ -44,9 +44,9 @@ class LocaleTest extends TestCase
 
     public function test_french_prefix_sets_french_locale_and_translations(): void
     {
-        $this->makePost('fr', 'bonjour');
+        $post = $this->makePost('fr', 'bonjour');
 
-        $response = $this->get('/fr/bonjour');
+        $response = $this->get($post->url());
 
         $response->assertOk();
         $response->assertSee('lang="fr"', false);
@@ -57,9 +57,9 @@ class LocaleTest extends TestCase
 
     public function test_arabic_prefix_sets_rtl_direction(): void
     {
-        $this->makePost('ar', 'marhaba');
+        $post = $this->makePost('ar', 'marhaba');
 
-        $response = $this->get('/ar/marhaba');
+        $response = $this->get($post->url());
 
         $response->assertOk();
         $response->assertSee('lang="ar"', false);
@@ -103,7 +103,7 @@ class LocaleTest extends TestCase
         $en = Post::factory()->inTranslationGroup(10)->create(['slug' => 'hair-implant-cost-turkey']);
         $ar = Post::factory()->language('ar')->inTranslationGroup(10)->create(['slug' => 'تكلفة-زراعة-الشعر']);
 
-        $response = $this->get('/hair-implant-cost-turkey');
+        $response = $this->get($en->url());
 
         $response->assertOk();
         // Links to the actual Arabic slug, not a naive prefix swap (which would 404).
@@ -113,9 +113,9 @@ class LocaleTest extends TestCase
 
     public function test_language_switcher_omits_languages_without_a_translation(): void
     {
-        Post::factory()->inTranslationGroup(11)->create(['slug' => 'only-english']);
+        $post = Post::factory()->inTranslationGroup(11)->create(['slug' => 'only-english']);
 
-        $response = $this->get('/only-english');
+        $response = $this->get($post->url());
 
         $response->assertOk();
         $response->assertDontSee(url('/fr/only-english'), false);

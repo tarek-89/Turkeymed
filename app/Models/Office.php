@@ -3,13 +3,14 @@
 namespace App\Models;
 
 use App\Models\Concerns\HasTranslatedFields;
+use Database\Factories\OfficeFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Office extends Model
 {
-    /** @use HasFactory<\Database\Factories\OfficeFactory> */
+    /** @use HasFactory<OfficeFactory> */
     use HasFactory;
 
     use HasTranslatedFields;
@@ -26,6 +27,7 @@ class Office extends Model
             'hours' => 'array',
             'badge' => 'array',
             'is_published' => 'boolean',
+            'is_primary' => 'boolean',
         ];
     }
 

@@ -4,12 +4,12 @@ namespace App\Filament\Resources\Services\Schemas;
 
 use App\Models\Post;
 use App\Models\Service;
-use App\Models\ServiceCategory;
 use App\Support\SeoAnalyzer;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Placeholder;
+use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -17,10 +17,10 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Section;
-use Filament\Support\Icons\Heroicon;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
+use Illuminate\Contracts\View\View;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\Unique;
 
@@ -70,6 +70,22 @@ class ServiceForm
                             ->rows(2)
                             ->columnSpanFull()
                             ->helperText('Optional summary, also used as a fallback meta description.'),
+
+                        Textarea::make('summary')
+                            ->rows(3)
+                            ->columnSpanFull()
+                            ->helperText('Answer-first lead shown at the top of the page and used as the meta-description fallback. 1–2 concise sentences.'),
+
+                        Repeater::make('faqs')
+                            ->label('FAQ')
+                            ->columnSpanFull()
+                            ->schema([
+                                TextInput::make('question')->required()->maxLength(300),
+                                Textarea::make('answer')->required()->rows(3),
+                            ])
+                            ->addActionLabel('Add question')
+                            ->collapsed()
+                            ->defaultItems(0),
                     ]),
 
                 Section::make('Publishing')
@@ -106,7 +122,27 @@ class ServiceForm
                             ->searchable()
                             ->native(false),
 
-                        TextInput::make('author'),
+                        Select::make('author_id')
+                            ->label('Author (profile)')
+                            ->relationship(name: 'authorProfile', titleAttribute: 'name')
+                            ->searchable()
+                            ->preload()
+                            ->native(false)
+                            ->helperText('Credentialed author shown in the byline and structured data.'),
+
+                        Select::make('reviewer_id')
+                            ->label('Medically reviewed by')
+                            ->relationship(name: 'reviewer', titleAttribute: 'name')
+                            ->searchable()
+                            ->preload()
+                            ->native(false),
+
+                        DateTimePicker::make('last_reviewed_at')
+                            ->label('Last reviewed'),
+
+                        TextInput::make('author')
+                            ->label('Author name (legacy)')
+                            ->helperText('Fallback byline used only when no author profile is set.'),
 
                         Hidden::make('translation_group_id')
                             ->default(fn (): ?int => request()->filled('group') ? request()->integer('group') : null),
@@ -147,7 +183,7 @@ class ServiceForm
 
                         Placeholder::make('seo_analysis')
                             ->hiddenLabel()
-                            ->content(function (Get $get): \Illuminate\Contracts\View\View {
+                            ->content(function (Get $get): View {
                                 $analysis = SeoAnalyzer::analyze(
                                     title: $get('title'),
                                     metaTitle: $get('meta_title'),

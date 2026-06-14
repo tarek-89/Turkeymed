@@ -3,8 +3,8 @@
 namespace App\Filament\Resources\Offices\Schemas;
 
 use App\Support\Locale;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Tabs;
@@ -76,6 +76,10 @@ class OfficeForm
                         Toggle::make('is_published')
                             ->label('Published')
                             ->default(true),
+
+                        Toggle::make('is_primary')
+                            ->label('Primary location (HQ)')
+                            ->helperText('Used as the organization address in search-engine structured data. Set this on one office.'),
                     ]),
             ]);
     }

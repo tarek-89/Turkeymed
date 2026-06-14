@@ -6,31 +6,22 @@
     :og-image="$post->featuredImageUrl()"
     :alternates="$versions->map->url()->all()"
 >
-    @php
-        $jsonLd = [
-            '@context' => 'https://schema.org',
-            '@type' => 'BlogPosting',
-            'headline' => $post->title,
-            'inLanguage' => $post->language,
-            'mainEntityOfPage' => $post->url(),
-            'datePublished' => $post->published_at?->toIso8601String(),
-            'dateModified' => $post->updated_at?->toIso8601String(),
-            'author' => $post->author ? ['@type' => 'Person', 'name' => $post->author] : null,
-            'publisher' => ['@type' => 'Organization', 'name' => config('app.name')],
-            'image' => $post->featuredImageUrl(),
-            'description' => $post->metaDescription(),
-        ];
-    @endphp
-    <script type="application/ld+json">{!! json_encode(array_filter($jsonLd), JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) !!}</script>
+    <script type="application/ld+json">{!! json_encode(\App\Support\Seo\SchemaBuilder::blogPosting($post), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) !!}</script>
+
+    @if ($post->featuredImageUrl())
+        @push('head')
+            <link rel="preload" as="image" href="{{ $post->featuredImageUrl() }}" fetchpriority="high">
+        @endpush
+    @endif
 
     <x-ui.container>
         <x-ui.breadcrumbs
             class="pt-5"
             :items="array_values(array_filter([
                 ['label' => __('common.home'), 'href' => \App\Support\Navigation::homeUrl()],
-                ['label' => __('posts.blog'), 'href' => \App\Support\Navigation::homeUrl()],
+                ['label' => __('posts.blog'), 'href' => \App\Support\Navigation::blogUrl()],
                 $post->category
-                    ? ['label' => $post->category->name, 'href' => $post->category->url($post->language)]
+                    ? ['label' => $post->category->name, 'href' => $post->category->blogUrl($post->language)]
                     : null,
                 ['label' => $post->title],
             ]))"
@@ -51,12 +42,31 @@
                     {{ __('posts.min_read', ['minutes' => $post->readingTime()]) }}
                 </span>
             </div>
+
+            <x-content.byline
+                class="mt-5 justify-center"
+                :author="$post->authorProfile"
+                :author-name="$post->author"
+                :reviewer="$post->reviewer"
+                :updated="$post->last_reviewed_at ?? $post->updated_at"
+                :language="$post->language"
+            />
         </header>
+
+        @if ($post->summary)
+            <p class="mx-auto mt-6 max-w-3xl text-center text-lg leading-relaxed text-muted">{{ $post->summary }}</p>
+        @endif
 
         @if ($post->featuredImageUrl())
             <img
                 src="{{ $post->featuredImageUrl() }}"
+                @if ($post->featuredImageSrcset())
+                    srcset="{{ $post->featuredImageSrcset() }}"
+                    sizes="(max-width: 1024px) 100vw, 1024px"
+                @endif
                 alt="{{ $post->title }}"
+                width="2100"
+                height="900"
                 class="mx-auto mt-10 aspect-[21/9] w-full max-w-5xl rounded-2xl object-cover shadow-md"
                 loading="eager"
                 fetchpriority="high"
@@ -66,7 +76,33 @@
         <x-ui.prose class="mx-auto mt-10 max-w-3xl">
             {!! $post->body !!}
         </x-ui.prose>
+
+        @if ($post->authorProfile)
+            <x-content.author-card :author="$post->authorProfile" :language="$post->language" class="mx-auto mt-12 max-w-3xl" />
+        @endif
+
+        @if ($post->faqList())
+            <x-content.faq :items="$post->faqList()" class="mt-12" />
+        @endif
     </x-ui.section>
+
+    @php($relatedServices = $post->relatedServices())
+    @if ($relatedServices->isNotEmpty())
+        <x-ui.section :tight="true">
+            <x-ui.section-heading :title="__('content.related_treatments')" level="h2" />
+
+            <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                @foreach ($relatedServices as $relatedService)
+                    <x-ui.card :href="$relatedService->url()" :interactive="true" class="group flex flex-col">
+                        <h3 class="text-lg font-bold text-ink transition-colors duration-150 group-hover:text-cyan-800">{{ $relatedService->title }}</h3>
+                        @if ($relatedService->excerpt)
+                            <p class="mt-2 text-sm text-muted">{{ $relatedService->excerpt }}</p>
+                        @endif
+                    </x-ui.card>
+                @endforeach
+            </div>
+        </x-ui.section>
+    @endif
 
     @if ($related->isNotEmpty())
         <x-ui.section :tight="true">
