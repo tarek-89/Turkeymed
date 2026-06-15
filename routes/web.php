@@ -6,6 +6,7 @@ use App\Http\Controllers\ContactController;
 use App\Http\Controllers\FeedController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PostController;
+use App\Http\Controllers\RobotsController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\SitemapController;
 use Illuminate\Support\Facades\Route;
@@ -31,6 +32,10 @@ Route::pattern('authorSlug', '[^/]+');
 
 // Marketing homepage
 Route::get('/', [HomeController::class, 'index'])->name('home');
+
+// robots.txt — dynamic: respects SITE_INDEXABLE and uses the current host for
+// the sitemap URL. The static public/robots.txt was removed so this is reached.
+Route::get('/robots.txt', [RobotsController::class, 'index'])->name('robots');
 
 // XML sitemap (explicit path, before any catch-all)
 Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');

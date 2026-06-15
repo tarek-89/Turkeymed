@@ -158,6 +158,67 @@ function initSite() {
         });
     });
 
+    /* ---- YouTube lite-embed: swap the poster facade for the real iframe ----
+       Keeps YouTube's ~1 MB player off the initial load; it's injected only
+       when the visitor presses play. */
+    document.querySelectorAll('[data-youtube]').forEach((wrap) => {
+        const button = wrap.querySelector('[data-youtube-play]');
+        if (!button) return;
+
+        button.addEventListener('click', () => {
+            const src = wrap.getAttribute('data-youtube-src');
+            if (!src) return;
+
+            const iframe = document.createElement('iframe');
+            iframe.src = src;
+            iframe.title = wrap.getAttribute('data-youtube-title') || 'YouTube video';
+            iframe.className = 'h-full w-full';
+            iframe.allow =
+                'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+            iframe.referrerPolicy = 'strict-origin-when-cross-origin';
+            iframe.allowFullscreen = true;
+
+            wrap.innerHTML = '';
+            wrap.appendChild(iframe);
+            iframe.focus();
+        });
+    });
+
+    /* ---- Instagram: load embed.js only when the feed scrolls into view ----
+       The feed sits below the fold, so its ~1 MB script + iframes never load on
+       initial paint. rootMargin starts the fetch just before the user arrives,
+       so it feels instant without costing the initial load. */
+    const instagramSection = document.querySelector('[data-instagram-embed]');
+    if (instagramSection) {
+        const loadInstagram = () => {
+            if (window.instgrm) {
+                window.instgrm.Embeds.process();
+                return;
+            }
+            const script = document.createElement('script');
+            script.async = true;
+            script.src = 'https://www.instagram.com/embed.js';
+            document.body.appendChild(script);
+        };
+
+        if ('IntersectionObserver' in window) {
+            const observer = new IntersectionObserver(
+                (entries, obs) => {
+                    entries.forEach((entry) => {
+                        if (entry.isIntersecting) {
+                            loadInstagram();
+                            obs.disconnect();
+                        }
+                    });
+                },
+                { rootMargin: '300px' },
+            );
+            observer.observe(instagramSection);
+        } else {
+            loadInstagram();
+        }
+    }
+
     /* ---- Newsletter stub: prevent submit until a route is wired ---- */
     document.querySelectorAll('form[data-newsletter]').forEach((form) => {
         form.addEventListener('submit', (e) => e.preventDefault());

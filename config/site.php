@@ -44,6 +44,12 @@ return [
     // and search engines never index it. Flip to true only on the live domain.
     'indexable' => env('SITE_INDEXABLE', true),
 
+    // Send HSTS (Strict-Transport-Security) on secure responses. Keep OFF until
+    // the production domain is permanently served over HTTPS — browsers cache
+    // HSTS for a long time and it is hard to roll back. Flip on at go-live with
+    // HSTS_ENABLED=true.
+    'hsts' => env('HSTS_ENABLED', false),
+
     // Google Tag Manager container id, e.g. "GTM-XXXXXX". Empty = no GTM.
     'gtm_id' => env('GTM_ID', ''),
 

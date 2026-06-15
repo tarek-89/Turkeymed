@@ -3,6 +3,7 @@
 namespace App\Filament\Pages;
 
 use App\Models\Setting;
+use App\Support\Images\ResponsiveImageGenerator;
 use App\Support\Locale;
 use BackedEnum;
 use Filament\Forms\Components\FileUpload;
@@ -15,6 +16,7 @@ use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
+use Illuminate\Support\Facades\Storage;
 use UnitEnum;
 
 class ManageHomePage extends Page
@@ -135,11 +137,42 @@ class ManageHomePage extends Page
             Setting::set('home.'.$key, $state[$key] ?? null);
         }
 
-        Setting::set('home.hero_images', array_values($state['hero_images'] ?? []));
+        $heroImages = array_values($state['hero_images'] ?? []);
+        Setting::set('home.hero_images', $heroImages);
+        $this->generateHeroImageMeta($heroImages);
 
         Notification::make()
             ->title('Homepage saved')
             ->success()
             ->send();
+    }
+
+    /**
+     * Generate responsive WebP variants + intrinsic dimensions for the hero
+     * images and cache the metadata as a setting, so the homepage can render
+     * width/height and a srcset for its LCP image. Mirrors FeaturedImageObserver
+     * and only runs when R2 storage is configured (local/test stay untouched).
+     *
+     * @param  list<string>  $paths
+     */
+    private function generateHeroImageMeta(array $paths): void
+    {
+        if (blank(config('filesystems.disks.r2.key'))) {
+            return;
+        }
+
+        $generator = app(ResponsiveImageGenerator::class);
+        $disk = Storage::disk('r2');
+        $meta = [];
+
+        foreach ($paths as $path) {
+            $result = $generator->generate($disk, $path);
+
+            if ($result !== null) {
+                $meta[$path] = $result;
+            }
+        }
+
+        Setting::set('home.hero_images_meta', $meta);
     }
 }

@@ -52,7 +52,7 @@
                 <span class="px-1">·</span>
                 <a href="#" class="hover:text-white">{{ __('footer.cookies') }}</a>
             </p>
-            <p class="font-mono text-[0.7rem] text-white/40">
+            <p class="font-mono text-[0.7rem] text-white/60">
                 {{ collect(\App\Support\Locale::codes())->map(fn (string $code) => strtoupper($code))->implode(' · ') }}
             </p>
         </div>

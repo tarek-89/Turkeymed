@@ -27,7 +27,28 @@ class SecurityTest extends TestCase
         $response->assertHeader('X-Content-Type-Options', 'nosniff');
         $response->assertHeader('X-Frame-Options', 'SAMEORIGIN');
         $response->assertHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+        $response->assertHeader('Cross-Origin-Opener-Policy', 'same-origin');
         $this->assertStringContainsString("frame-ancestors 'self'", (string) $response->headers->get('Content-Security-Policy'));
+    }
+
+    public function test_hsts_is_sent_on_secure_requests_when_enabled(): void
+    {
+        config(['site.hsts' => true]);
+
+        $response = $this->get('https://localhost/');
+
+        $response->assertOk();
+        $response->assertHeader('Strict-Transport-Security', 'max-age=63072000; includeSubDomains');
+    }
+
+    public function test_hsts_is_absent_when_disabled(): void
+    {
+        config(['site.hsts' => false]);
+
+        $response = $this->get('https://localhost/');
+
+        $response->assertOk();
+        $this->assertNull($response->headers->get('Strict-Transport-Security'));
     }
 
     public function test_jsonld_escapes_script_breakout_in_titles(): void

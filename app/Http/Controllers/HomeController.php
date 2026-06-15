@@ -35,6 +35,19 @@ class HomeController extends Controller
     {
         $r2 = rtrim((string) config('filesystems.disks.r2.url'), '/');
 
+        $heroPaths = array_values((array) Setting::get('home.hero_images', []));
+        $heroMeta = (array) Setting::get('home.hero_images_meta', []);
+        $heroImages = array_map(fn (string $path): string => $r2.'/'.ltrim($path, '/'), $heroPaths);
+
+        // LCP hero image: intrinsic dimensions + a WebP srcset built from the
+        // generated variants (same pipeline as post/service featured images).
+        $firstMeta = ($heroPaths[0] ?? null) ? ($heroMeta[$heroPaths[0]] ?? null) : null;
+        $heroImageSrcset = is_array($firstMeta) && is_array($firstMeta['variants'] ?? null) && $firstMeta['variants'] !== []
+            ? collect($firstMeta['variants'])
+                ->map(fn (string $path, int|string $width): string => $r2.'/'.ltrim($path, '/').' '.$width.'w')
+                ->implode(', ')
+            : null;
+
         return view('home.index', [
             'language' => $language,
 
@@ -43,10 +56,10 @@ class HomeController extends Controller
             'heroTitle' => Setting::translated('home.hero_title', $language),
             'heroTitleAccent' => Setting::translated('home.hero_title_accent', $language),
             'heroLead' => Setting::translated('home.hero_lead', $language),
-            'heroImages' => array_map(
-                fn (string $path): string => $r2.'/'.ltrim($path, '/'),
-                (array) Setting::get('home.hero_images', []),
-            ),
+            'heroImages' => $heroImages,
+            'heroImageWidth' => $firstMeta['width'] ?? null,
+            'heroImageHeight' => $firstMeta['height'] ?? null,
+            'heroImageSrcset' => $heroImageSrcset,
             'heroStatValue' => Setting::get('home.hero_stat_value'),
             'heroStatLabel' => Setting::translated('home.hero_stat_label', $language),
 

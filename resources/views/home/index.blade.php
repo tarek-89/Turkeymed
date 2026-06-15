@@ -7,6 +7,20 @@
     :description="$heroLead"
     :canonical="$language === \App\Support\Locale::DEFAULT ? route('home') : route('home.localized', $language)"
 >
+    @if (! empty($heroImages))
+        {{-- Preload the LCP hero image so it starts downloading before the CSS/JS
+             is parsed — mirrors the post-hero treatment. --}}
+        @push('head')
+            <link rel="preload" as="image"
+                href="{{ $heroImages[0] }}"
+                @if (! empty($heroImageSrcset ?? null))
+                    imagesrcset="{{ $heroImageSrcset }}"
+                    imagesizes="(max-width: 1024px) 100vw, 600px"
+                @endif
+                fetchpriority="high">
+        @endpush
+    @endif
+
     {{-- HERO --}}
     <x-ui.section :tight="true">
         <div class="grid gap-8 overflow-hidden rounded-2xl bg-[linear-gradient(135deg,var(--color-navy-800),var(--color-navy-700)_45%,var(--color-cyan-700))] p-[clamp(28px,5vw,56px)] text-white lg:grid-cols-2 lg:items-center">
@@ -42,6 +56,14 @@
                     {{-- Natural ratio, height-capped so the hero keeps its size; rounded with a soft lift. --}}
                     <img
                         src="{{ $heroImages[0] }}"
+                        @if (! empty($heroImageSrcset ?? null))
+                            srcset="{{ $heroImageSrcset }}"
+                            sizes="(max-width: 1024px) 100vw, 600px"
+                        @endif
+                        @if (($heroImageWidth ?? null) && ($heroImageHeight ?? null))
+                            width="{{ $heroImageWidth }}"
+                            height="{{ $heroImageHeight }}"
+                        @endif
                         alt="{{ $heroTitle }}"
                         loading="eager"
                         fetchpriority="high"
@@ -178,7 +200,10 @@
 
     {{-- INSTAGRAM --}}
     @if ($instagramPosts->isNotEmpty())
-        <x-ui.section :tight="true">
+        {{-- embed.js is loaded lazily (see [data-instagram-embed] in app.js) only
+             when this section scrolls into view, so Instagram's heavy script never
+             loads on initial paint. --}}
+        <x-ui.section :tight="true" data-instagram-embed>
             <x-ui.section-heading :eyebrow="__('home.instagram_eyebrow')" :title="__('home.instagram_title')" />
             @if ($instagramPosts->count() > 3)
                 <x-ui.slider>
@@ -194,10 +219,6 @@
                 </div>
             @endif
         </x-ui.section>
-
-        @push('scripts')
-            <script async src="https://www.instagram.com/embed.js"></script>
-        @endpush
     @endif
 
     {{-- JOURNAL --}}

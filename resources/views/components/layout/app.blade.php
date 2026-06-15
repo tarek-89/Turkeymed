@@ -26,8 +26,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     @if (config('site.gtm_id'))
-        {{-- Google Tag Manager --}}
-        <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','{{ config('site.gtm_id') }}');</script>
+        {{-- Google Tag Manager — deferred off the critical path.
+             dataLayer is created immediately (cheap) so events can queue, but
+             the heavy gtm.js is only fetched on the first user interaction, or
+             on idle / a short timeout fallback so no-interaction visits are
+             still measured. This keeps GTM from competing with first paint. --}}
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            (function (w, d, id) {
+                var loaded = false;
+                var events = ['scroll', 'keydown', 'pointerdown', 'touchstart', 'mousemove'];
+                function loadGTM() {
+                    if (loaded) { return; }
+                    loaded = true;
+                    events.forEach(function (e) { w.removeEventListener(e, loadGTM); });
+                    w.dataLayer.push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' });
+                    var f = d.getElementsByTagName('script')[0];
+                    var j = d.createElement('script');
+                    j.async = true;
+                    j.src = 'https://www.googletagmanager.com/gtm.js?id=' + id;
+                    f.parentNode.insertBefore(j, f);
+                }
+                events.forEach(function (e) { w.addEventListener(e, loadGTM, { passive: true, once: true }); });
+                if ('requestIdleCallback' in w) {
+                    w.requestIdleCallback(loadGTM, { timeout: 5000 });
+                } else {
+                    w.setTimeout(loadGTM, 4000);
+                }
+            })(window, document, '{{ config('site.gtm_id') }}');
+        </script>
     @endif
 
     <title>{{ $pageTitle }}</title>

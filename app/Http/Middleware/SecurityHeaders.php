@@ -47,6 +47,13 @@ class SecurityHeaders
         $response->headers->set('X-Frame-Options', 'SAMEORIGIN');
         $response->headers->set('Referrer-Policy', 'strict-origin-when-cross-origin');
         $response->headers->set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+        $response->headers->set('Cross-Origin-Opener-Policy', 'same-origin');
+
+        // HSTS only over HTTPS, and only when explicitly enabled for production
+        // (browsers cache it aggressively, so it must never leak onto http/staging).
+        if ($request->secure() && config('site.hsts', false)) {
+            $response->headers->set('Strict-Transport-Security', 'max-age=63072000; includeSubDomains');
+        }
 
         $csp = implode('; ', [
             "object-src 'none'",

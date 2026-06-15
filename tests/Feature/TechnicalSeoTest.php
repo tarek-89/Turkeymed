@@ -41,6 +41,29 @@ class TechnicalSeoTest extends TestCase
         $response->assertSee($post->featuredImageUrl(), false);
     }
 
+    public function test_robots_txt_blocks_everything_when_not_indexable(): void
+    {
+        config(['site.indexable' => false]);
+
+        $response = $this->get('/robots.txt');
+
+        $response->assertOk();
+        $this->assertStringContainsString('text/plain', (string) $response->headers->get('Content-Type'));
+        $response->assertSee('Disallow: /', false);
+        $response->assertDontSee('Sitemap:', false);
+    }
+
+    public function test_robots_txt_allows_crawling_and_advertises_sitemap_when_indexable(): void
+    {
+        config(['site.indexable' => true]);
+
+        $response = $this->get('/robots.txt');
+
+        $response->assertOk();
+        $response->assertSee('Disallow: /admin', false);
+        $response->assertSee('Sitemap: '.url('/sitemap.xml'), false);
+    }
+
     public function test_paginated_blog_self_canonicalises(): void
     {
         Post::factory()->count(15)->create();
