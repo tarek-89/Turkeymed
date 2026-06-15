@@ -3,15 +3,19 @@
     'height' => 'h-10',   // Tailwind height utility for the logo image
 ])
 @php
-    $file = $dark ? 'images/logo-white.png' : 'images/logo.png';
+    // Intrinsic dimensions must match each file's real pixel ratio, or Lighthouse
+    // flags "incorrect aspect ratio". logo.png is 500×200, logo-white.png 384×154.
+    [$file, $logoWidth, $logoHeight] = $dark
+        ? ['images/logo-white.png', 384, 154]
+        : ['images/logo.png', 500, 200];
     $hasLogo = is_file(public_path($file));
 @endphp
 @if ($hasLogo)
     <img
         src="{{ asset($file) }}"
         alt="{{ config('site.brand') }}"
-        width="512"
-        height="170"
+        width="{{ $logoWidth }}"
+        height="{{ $logoHeight }}"
         class="{{ $height }} w-auto"
     >
 @else

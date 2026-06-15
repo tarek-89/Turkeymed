@@ -190,6 +190,19 @@ function initSite() {
        so it feels instant without costing the initial load. */
     const instagramSection = document.querySelector('[data-instagram-embed]');
     if (instagramSection) {
+        // Instagram's embed.js injects iframes without a title, which fails the
+        // frame-title accessibility audit. Watch the section and label any iframe
+        // it creates as soon as it appears.
+        const titleInstagramFrames = () => {
+            instagramSection.querySelectorAll('iframe:not([title])').forEach((frame) => {
+                frame.setAttribute('title', 'Instagram post');
+            });
+        };
+        new MutationObserver(titleInstagramFrames).observe(instagramSection, {
+            childList: true,
+            subtree: true,
+        });
+
         const loadInstagram = () => {
             if (window.instgrm) {
                 window.instgrm.Embeds.process();
