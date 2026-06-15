@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\Post;
 use App\Models\Service;
+use App\Models\Setting;
 use App\Support\Images\ResponsiveImageGenerator;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Collection;
@@ -13,7 +14,7 @@ class BackfillResponsiveImages extends Command
 {
     protected $signature = 'images:variants {--force : Regenerate even when metadata already exists}';
 
-    protected $description = 'Generate responsive WebP variants for existing post/service featured images.';
+    protected $description = 'Generate responsive WebP variants for existing post/service featured images and the homepage hero.';
 
     public function handle(ResponsiveImageGenerator $generator): int
     {
@@ -38,6 +39,24 @@ class BackfillResponsiveImages extends Command
                         $count++;
                     }
                 });
+        }
+
+        // Homepage hero images live in a Setting (not a model), so back them up too.
+        $heroPaths = array_values((array) Setting::get('home.hero_images', []));
+
+        if ($heroPaths !== [] && ($force || blank(Setting::get('home.hero_images_meta')))) {
+            $heroMeta = [];
+
+            foreach ($heroPaths as $path) {
+                $result = $generator->generate($disk, $path);
+
+                if ($result !== null) {
+                    $heroMeta[$path] = $result;
+                    $count++;
+                }
+            }
+
+            Setting::set('home.hero_images_meta', $heroMeta);
         }
 
         $this->info("Processed {$count} image(s).");

@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Post;
+use App\Models\Setting;
 use App\Support\Images\ResponsiveImageGenerator;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
@@ -85,5 +86,22 @@ class ResponsiveImageTest extends TestCase
 
         $this->assertNotNull($post->fresh()->featured_image_meta);
         Storage::disk('r2')->assertExists('2026/06/legacy-800.webp');
+    }
+
+    public function test_backfill_command_generates_homepage_hero_meta(): void
+    {
+        Storage::fake('r2');
+        $path = 'home/hero/a.jpg';
+        Storage::disk('r2')->put($path, UploadedFile::fake()->image('a.jpg', 1600, 1000)->getContent());
+
+        config(['filesystems.disks.r2.key' => 'test', 'filesystems.disks.r2.url' => 'https://media.test']);
+        Setting::set('home.hero_images', [$path]);
+
+        $this->artisan('images:variants')->assertSuccessful();
+
+        $meta = (array) Setting::get('home.hero_images_meta');
+        $this->assertArrayHasKey($path, $meta);
+        $this->assertSame(1600, $meta[$path]['width']);
+        Storage::disk('r2')->assertExists('home/hero/a-800.webp');
     }
 }
