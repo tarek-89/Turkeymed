@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\AboutController;
-use App\Http\Controllers\AuthorController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\FeedController;
 use App\Http\Controllers\HomeController;
@@ -28,7 +27,6 @@ use Illuminate\Support\Facades\Route;
 Route::pattern('locale', '[a-z]{2}');
 Route::pattern('categorySlug', '[^/]+');
 Route::pattern('slug', '[^/]+');
-Route::pattern('authorSlug', '[^/]+');
 
 // Marketing homepage
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -59,9 +57,6 @@ Route::get('/services', [ServiceController::class, 'index'])->name('services.ind
 Route::get('/services/{categorySlug}', [ServiceController::class, 'category'])->name('services.category');
 Route::get('/services/{categorySlug}/{slug}', [ServiceController::class, 'show'])->name('services.show');
 
-// Author profiles
-Route::get('/authors/{authorSlug}', [AuthorController::class, 'show'])->name('authors.show');
-
 // Static pages
 Route::get('/about', [AboutController::class, 'show'])->name('about');
 Route::get('/contact', [ContactController::class, 'show'])->name('contact');
@@ -81,9 +76,6 @@ Route::get('/{locale}/blog/{categorySlug}/{slug}', [PostController::class, 'show
 Route::get('/{locale}/services', [ServiceController::class, 'indexLocalized'])->name('services.index.localized');
 Route::get('/{locale}/services/{categorySlug}', [ServiceController::class, 'categoryLocalized'])->name('services.category.localized');
 Route::get('/{locale}/services/{categorySlug}/{slug}', [ServiceController::class, 'showLocalized'])->name('services.show.localized');
-
-// Author profiles
-Route::get('/{locale}/authors/{authorSlug}', [AuthorController::class, 'showLocalized'])->name('authors.show.localized');
 
 // Static pages
 Route::get('/{locale}/about', [AboutController::class, 'showLocalized'])->name('about.localized');

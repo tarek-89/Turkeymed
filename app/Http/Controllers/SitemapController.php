@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Author;
 use App\Models\Post;
 use App\Models\Service;
 use App\Models\ServiceCategory;
@@ -23,7 +22,6 @@ class SitemapController extends Controller
             $this->contentEntries(Post::published()->with('category')->get()),
             $this->contentEntries(Service::published()->with('category')->get()),
             $this->categoryEntries(),
-            $this->authorEntries(),
         );
 
         return response()
@@ -117,34 +115,6 @@ class SitemapController extends Controller
                     'loc' => $loc,
                     'lastmod' => $category->updated_at?->toAtomString(),
                     'alternates' => [],
-                ];
-            }
-        }
-
-        return $entries;
-    }
-
-    /**
-     * Author profiles — one entry per locale, cross-linked with hreflang.
-     *
-     * @return list<array{loc: string, lastmod: ?string, alternates: array<string, string>}>
-     */
-    private function authorEntries(): array
-    {
-        $codes = Locale::codes();
-        $entries = [];
-
-        foreach (Author::query()->where('is_published', true)->get() as $author) {
-            $alternates = [];
-            foreach ($codes as $code) {
-                $alternates[$code] = $author->url($code);
-            }
-
-            foreach ($codes as $code) {
-                $entries[] = [
-                    'loc' => $alternates[$code],
-                    'lastmod' => $author->updated_at?->toAtomString(),
-                    'alternates' => $alternates,
                 ];
             }
         }

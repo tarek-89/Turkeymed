@@ -2,13 +2,13 @@
 
 namespace App\Support\Seo;
 
-use App\Models\Author;
 use App\Models\Office;
 use App\Models\Post;
 use App\Models\Service;
 use App\Models\Setting;
 use App\Models\SocialLink;
 use App\Models\Testimonial;
+use App\Models\User;
 
 /**
  * Builds the sitewide JSON-LD entity graph (MedicalOrganization + WebSite).
@@ -135,11 +135,11 @@ class SchemaBuilder
     }
 
     /**
-     * A Person entity for an author/reviewer, with credentials and profiles.
+     * A Person entity for an author, with credentials and profiles.
      *
      * @return array<string, mixed>
      */
-    public static function person(Author $author, ?string $locale = null): array
+    public static function person(User $author, ?string $locale = null): array
     {
         $locale ??= app()->getLocale();
 
@@ -150,15 +150,14 @@ class SchemaBuilder
             'name' => $author->name,
             'jobTitle' => $jobTitle !== '' ? $jobTitle : null,
             'description' => $author->translate('bio', $locale),
-            'url' => $author->url($locale),
             'image' => $author->photoUrl(),
             'sameAs' => $author->profileLinks(),
         ], static fn ($value): bool => $value !== null && $value !== '' && $value !== []);
     }
 
     /**
-     * BlogPosting for an article, with full author/reviewer Person entities
-     * and a reference to the sitewide organization as publisher.
+     * BlogPosting for an article, with the author Person entity and a
+     * reference to the sitewide organization as publisher.
      *
      * @return array<string, mixed>
      */
@@ -174,8 +173,7 @@ class SchemaBuilder
             'mainEntityOfPage' => $post->url(),
             'datePublished' => $post->published_at?->toIso8601String(),
             'dateModified' => $post->updated_at?->toIso8601String(),
-            'author' => self::authorEntity($post->authorProfile, $post->author, $locale),
-            'reviewedBy' => $post->reviewer ? self::person($post->reviewer, $locale) : null,
+            'author' => self::authorEntity($post->createdBy, $post->author, $locale),
             'publisher' => ['@id' => url('/').'#organization'],
             'image' => $post->featuredImageUrl(),
             'description' => $post->metaDescription(),
@@ -208,20 +206,18 @@ class SchemaBuilder
             'image' => $service->featuredImageUrl(),
             'datePublished' => $service->published_at?->toIso8601String(),
             'dateModified' => $service->updated_at?->toIso8601String(),
-            'lastReviewed' => $service->last_reviewed_at?->toIso8601String(),
-            'reviewedBy' => $service->reviewer ? self::person($service->reviewer, $locale) : null,
-            'author' => self::authorEntity($service->authorProfile, $service->author, $locale),
+            'author' => self::authorEntity($service->createdBy, $service->author, $locale),
             'about' => $procedure,
             'publisher' => ['@id' => url('/').'#organization'],
         ], static fn ($value): bool => $value !== null && $value !== '' && $value !== []);
     }
 
     /**
-     * Prefer the credentialed Author entity; fall back to the legacy name string.
+     * Prefer the credentialed user profile; fall back to the legacy name string.
      *
      * @return array<string, mixed>|null
      */
-    private static function authorEntity(?Author $author, ?string $legacyName, string $locale): ?array
+    private static function authorEntity(?User $author, ?string $legacyName, string $locale): ?array
     {
         if ($author) {
             return self::person($author, $locale);

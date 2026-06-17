@@ -122,23 +122,13 @@ class PostForm
                             ->searchable()
                             ->native(false),
 
-                        Select::make('author_id')
-                            ->label('Author (profile)')
-                            ->relationship(name: 'authorProfile', titleAttribute: 'name')
+                        Select::make('created_by')
+                            ->label('Author (user)')
+                            ->relationship(name: 'createdBy', titleAttribute: 'name')
                             ->searchable()
                             ->preload()
                             ->native(false)
-                            ->helperText('Credentialed author shown in the byline and structured data.'),
-
-                        Select::make('reviewer_id')
-                            ->label('Medically reviewed by')
-                            ->relationship(name: 'reviewer', titleAttribute: 'name')
-                            ->searchable()
-                            ->preload()
-                            ->native(false),
-
-                        DateTimePicker::make('last_reviewed_at')
-                            ->label('Last reviewed'),
+                            ->helperText('User credited as author in the byline and structured data.'),
 
                         TextInput::make('author')
                             ->label('Author name (legacy)')

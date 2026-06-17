@@ -3,9 +3,11 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Models\Concerns\HasTranslatedFields;
 use Database\Factories\UserFactory;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -13,7 +15,7 @@ use Illuminate\Notifications\Notifiable;
 class User extends Authenticatable implements FilamentUser
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory, HasTranslatedFields, Notifiable;
 
     /**
      * Gate access to the Filament admin panel.
@@ -44,8 +46,16 @@ class User extends Authenticatable implements FilamentUser
      */
     protected $fillable = [
         'name',
+        'slug',
         'email',
         'password',
+        'credentials',
+        'title',
+        'photo',
+        'bio',
+        'same_as',
+        'is_published',
+        'sort_order',
     ];
 
     /**
@@ -68,6 +78,50 @@ class User extends Authenticatable implements FilamentUser
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'bio' => 'array',
+            'same_as' => 'array',
+            'is_published' => 'boolean',
         ];
+    }
+
+    /* ---------------- Author profile ---------------- */
+
+    /**
+     * Users that are published, public-facing author profiles.
+     *
+     * @param  Builder<self>  $query
+     * @return Builder<self>
+     */
+    public function scopePublished(Builder $query): Builder
+    {
+        return $query->where('is_published', true);
+    }
+
+    public function photoUrl(): ?string
+    {
+        if (! $this->photo) {
+            return null;
+        }
+
+        return rtrim((string) config('filesystems.disks.r2.url'), '/').'/'.ltrim($this->photo, '/');
+    }
+
+    /** Name with credentials appended, e.g. "Dr. Ayşe Yılmaz, MD". */
+    public function nameWithCredentials(): string
+    {
+        return $this->credentials ? $this->name.', '.$this->credentials : $this->name;
+    }
+
+    /**
+     * Profile/social URLs for the Person `sameAs`.
+     *
+     * @return list<string>
+     */
+    public function profileLinks(): array
+    {
+        return collect((array) $this->same_as)
+            ->filter(static fn ($url): bool => is_string($url) && trim($url) !== '')
+            ->values()
+            ->all();
     }
 }

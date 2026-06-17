@@ -45,10 +45,9 @@
 
             <x-content.byline
                 class="mt-5 justify-center"
-                :author="$post->authorProfile"
+                :author="$post->createdBy"
                 :author-name="$post->author"
-                :reviewer="$post->reviewer"
-                :updated="$post->last_reviewed_at ?? $post->updated_at"
+                :updated="$post->updated_at"
                 :language="$post->language"
             />
         </header>
@@ -76,10 +75,6 @@
         <x-ui.prose class="mx-auto mt-10 max-w-3xl">
             {!! $post->body !!}
         </x-ui.prose>
-
-        @if ($post->authorProfile)
-            <x-content.author-card :author="$post->authorProfile" :language="$post->language" class="mx-auto mt-12 max-w-3xl" />
-        @endif
 
         @if ($post->faqList())
             <x-content.faq :items="$post->faqList()" class="mt-12" />

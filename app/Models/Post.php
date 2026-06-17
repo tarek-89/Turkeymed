@@ -26,7 +26,6 @@ class Post extends Model
             'is_elementor' => 'boolean',
             'published_at' => 'datetime',
             'wp_modified_at' => 'datetime',
-            'last_reviewed_at' => 'datetime',
             'featured_image_meta' => 'array',
             'faqs' => 'array',
         ];
@@ -40,16 +39,10 @@ class Post extends Model
         return $this->belongsTo(ServiceCategory::class, 'service_category_id');
     }
 
-    /** The credentialed author (preferred over the legacy `author` string). @return BelongsTo<Author, $this> */
-    public function authorProfile(): BelongsTo
+    /** The user credited as author (preferred over the legacy `author` string). @return BelongsTo<User, $this> */
+    public function createdBy(): BelongsTo
     {
-        return $this->belongsTo(Author::class, 'author_id');
-    }
-
-    /** The medical reviewer. @return BelongsTo<Author, $this> */
-    public function reviewer(): BelongsTo
-    {
-        return $this->belongsTo(Author::class, 'reviewer_id');
+        return $this->belongsTo(User::class, 'created_by');
     }
 
     /* ---------------- Scopes ---------------- */

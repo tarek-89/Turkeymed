@@ -26,10 +26,13 @@ class UserFactory extends Factory
     {
         return [
             'name' => fake()->name(),
+            'slug' => null,
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
+            'is_published' => false,
+            'sort_order' => 0,
         ];
     }
 
@@ -41,5 +44,20 @@ class UserFactory extends Factory
         return $this->state(fn (array $attributes) => [
             'email_verified_at' => null,
         ]);
+    }
+
+    /**
+     * A published, public-facing author profile.
+     */
+    public function author(): static
+    {
+        return $this->state(function (array $attributes): array {
+            $name = $attributes['name'] ?? fake()->name();
+
+            return [
+                'slug' => Str::slug($name).'-'.Str::lower(Str::random(5)),
+                'is_published' => true,
+            ];
+        });
     }
 }

@@ -2,9 +2,9 @@
 
 namespace Tests\Feature;
 
-use App\Models\Author;
 use App\Models\Post;
 use App\Models\Service;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -19,56 +19,25 @@ class AuthorPageTest extends TestCase
         $this->withoutVite();
     }
 
-    public function test_author_page_lists_their_published_content_with_person_schema(): void
+    public function test_post_page_shows_byline_and_author_schema(): void
     {
-        $author = Author::factory()->create([
-            'name' => 'Dr. Ayse Yilmaz',
-            'slug' => 'dr-ayse-yilmaz',
-            'credentials' => 'MD',
-            'bio' => ['en' => 'Hair transplant specialist.'],
-        ]);
-        $post = Post::factory()->create(['author_id' => $author->id, 'title' => 'The DHI Guide']);
-        $otherPost = Post::factory()->create(['title' => 'Unrelated Article']);
-
-        $response = $this->get('/authors/dr-ayse-yilmaz');
-
-        $response->assertOk();
-        $response->assertSee('Dr. Ayse Yilmaz', false);
-        $response->assertSee('MD', false);
-        $response->assertSee('The DHI Guide', false);
-        $response->assertDontSee('Unrelated Article', false);
-        $response->assertSee('"@type":"Person"', false);
-    }
-
-    public function test_unpublished_author_returns_404(): void
-    {
-        Author::factory()->unpublished()->create(['slug' => 'hidden-author']);
-
-        $this->get('/authors/hidden-author')->assertNotFound();
-    }
-
-    public function test_unknown_author_returns_404(): void
-    {
-        $this->get('/authors/nobody')->assertNotFound();
-    }
-
-    public function test_post_page_shows_byline_and_reviewer_schema(): void
-    {
-        $author = Author::factory()->create(['name' => 'Dr. Mehmet Demir', 'credentials' => 'MD']);
-        $reviewer = Author::factory()->create(['name' => 'Dr. Selin Kaya']);
-        $post = Post::factory()->create([
-            'author_id' => $author->id,
-            'reviewer_id' => $reviewer->id,
-            'last_reviewed_at' => now(),
-        ]);
+        $author = User::factory()->author()->create(['name' => 'Dr. Mehmet Demir', 'credentials' => 'MD']);
+        $post = Post::factory()->create(['created_by' => $author->id]);
 
         $response = $this->get($post->url());
 
         $response->assertOk();
         $response->assertSee('Dr. Mehmet Demir', false);
-        $response->assertSee(__('content.reviewed_by'), false);
-        $response->assertSee('"reviewedBy"', false);
+        $response->assertSee(__('content.written_by'), false);
         $response->assertSee('"@type":"BlogPosting"', false);
+        $response->assertSee('"@type":"Person"', false);
+    }
+
+    public function test_author_profile_page_is_gone(): void
+    {
+        $author = User::factory()->author()->create(['slug' => 'mohamad-elhomsi']);
+
+        $this->get('/authors/'.$author->slug)->assertNotFound();
     }
 
     public function test_service_page_emits_medical_web_page_schema(): void

@@ -67,10 +67,9 @@
         <x-service.layout>
             <x-content.byline
                 class="mb-6"
-                :author="$service->authorProfile"
+                :author="$service->createdBy"
                 :author-name="$service->author"
-                :reviewer="$service->reviewer"
-                :updated="$service->last_reviewed_at ?? $service->updated_at"
+                :updated="$service->updated_at"
                 :language="$service->language"
             />
 
