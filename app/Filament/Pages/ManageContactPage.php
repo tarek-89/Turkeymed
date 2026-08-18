@@ -36,6 +36,9 @@ class ManageContactPage extends Page
     public function mount(): void
     {
         $this->form->fill([
+            'site_phone' => Setting::get('site.phone') ?? config('site.phone'),
+            'site_whatsapp' => Setting::get('site.whatsapp') ?? config('site.whatsapp'),
+            'site_email' => Setting::get('site.email') ?? config('site.email'),
             'hero_eyebrow' => Setting::get('contact.hero_eyebrow', []),
             'hero_title' => Setting::get('contact.hero_title', []),
             'hero_text' => Setting::get('contact.hero_text', []),
@@ -52,6 +55,24 @@ class ManageContactPage extends Page
     {
         return $schema
             ->components([
+                Section::make('Contact details')
+                    ->description('The phone, WhatsApp and email values used across the site — contact cards, WhatsApp buttons, footer and structured data. Use international format.')
+                    ->components([
+                        TextInput::make('site_phone')
+                            ->label('Phone')
+                            ->tel()
+                            ->helperText('International format for tel: links, e.g. +90 212 000 00 00.')
+                            ->maxLength(40),
+                        TextInput::make('site_whatsapp')
+                            ->label('WhatsApp')
+                            ->helperText('International format, digits only, for wa.me links, e.g. 905550000000.')
+                            ->maxLength(40),
+                        TextInput::make('site_email')
+                            ->label('Email')
+                            ->email()
+                            ->maxLength(120),
+                    ]),
+
                 Section::make('Hero')
                     ->description('Top of the contact page.')
                     ->components([
@@ -133,6 +154,11 @@ class ManageContactPage extends Page
     public function save(): void
     {
         $state = $this->form->getState();
+
+        // Site-wide contact details (override config('site.*') when set).
+        Setting::set('site.phone', filled($state['site_phone'] ?? null) ? trim((string) $state['site_phone']) : null);
+        Setting::set('site.whatsapp', filled($state['site_whatsapp'] ?? null) ? preg_replace('/\D/', '', (string) $state['site_whatsapp']) : null);
+        Setting::set('site.email', filled($state['site_email'] ?? null) ? trim((string) $state['site_email']) : null);
 
         foreach ([
             'hero_eyebrow', 'hero_title', 'hero_text',

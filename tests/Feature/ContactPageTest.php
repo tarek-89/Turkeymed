@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Office;
 use App\Models\Setting;
+use App\Providers\AppServiceProvider;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -87,6 +88,35 @@ class ContactPageTest extends TestCase
 
         $response->assertOk();
         $response->assertSee('https://maps.google.com/embed?xyz', false);
+    }
+
+    public function test_site_contact_setting_overrides_config(): void
+    {
+        $this->seedHero();
+        Setting::set('site.whatsapp', '905551234567');
+        Setting::set('site.email', 'coordinator@turkeymed.net');
+
+        // In a real request the provider boots fresh (after the setting
+        // exists); re-apply here since the provider booted once at the
+        // start of the test process, before these settings were written.
+        AppServiceProvider::overrideSiteContactFromSettings();
+
+        $response = $this->get('/contact');
+
+        $response->assertOk();
+        $response->assertSee('https://wa.me/905551234567', false);
+        $response->assertSee('coordinator@turkeymed.net');
+    }
+
+    public function test_site_contact_falls_back_to_config_when_setting_absent(): void
+    {
+        $this->seedHero();
+        config(['site.email' => 'fallback@turkeymed.net']);
+
+        $response = $this->get('/contact');
+
+        $response->assertOk();
+        $response->assertSee('fallback@turkeymed.net');
     }
 
     public function test_localized_contact_page_serves_arabic_rtl(): void
