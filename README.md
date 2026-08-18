@@ -1,59 +1,185 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# TurkeyMed
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A multilingual medical-tourism marketing site for a Turkey-based clinic. Built with **Laravel 12** and **Filament 5**, styled with the custom **Aurora** design system (Tailwind CSS v4). Content — blog posts, services, homepage sections, offices, testimonials — is managed through the Filament admin panel and served in English plus locale-prefixed translations, with SEO essentials (sitemap, RSS feed, dynamic `robots.txt`, WordPress URL redirects) built in.
 
-## About Laravel
+## Tech stack
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+| Area | Choice |
+|------|--------|
+| Language | PHP 8.2 |
+| Framework | Laravel 12 |
+| Admin | Filament 5 |
+| Frontend | Blade + Tailwind CSS v4 (Aurora design system), Vite |
+| Database | SQLite (default), MySQL-compatible |
+| Media storage | Local disk, or Cloudflare R2 / S3 (Intervention Image pipeline) |
+| Testing | PHPUnit 11 |
+| Code style | Laravel Pint |
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Requirements
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- PHP 8.2+ with common extensions (`mbstring`, `sqlite3`, `gd` or `imagick` for image processing)
+- Composer 2
+- Node.js 20+ and npm
 
-## Learning Laravel
+## Quick start
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+From the project root:
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+```bash
+composer setup
+```
 
-## Laravel Sponsors
+That single command installs PHP and JS dependencies, creates `.env`, generates the app key, runs migrations, and builds frontend assets. It is defined in `composer.json` and runs:
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+```bash
+composer install
+cp .env.example .env          # only if .env is missing
+php artisan key:generate
+php artisan migrate --force
+npm install
+npm run build
+```
 
-### Premium Partners
+### Manual setup
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+If you prefer to run the steps yourself:
 
-## Contributing
+```bash
+# 1. Install dependencies
+composer install
+npm install
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+# 2. Environment
+cp .env.example .env
+php artisan key:generate
 
-## Code of Conduct
+# 3. Database (SQLite by default — file is created automatically)
+touch database/database.sqlite
+php artisan migrate
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+# 4. Build assets
+npm run build
+```
 
-## Security Vulnerabilities
+## Running locally
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+The recommended dev workflow runs the PHP server, queue worker, log viewer, and Vite together:
 
-## License
+```bash
+composer dev
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+This starts, concurrently:
+
+- `php artisan serve` — the app at http://localhost:8000
+- `php artisan queue:listen` — the queue worker
+- `php artisan pail` — live log tailing
+- `npm run dev` — Vite with hot module reload
+
+Prefer to run pieces separately? In two terminals:
+
+```bash
+php artisan serve      # terminal 1 — http://localhost:8000
+npm run dev            # terminal 2 — Vite dev server
+```
+
+> If a frontend change doesn't show up, the Vite dev server isn't running or assets weren't built — run `npm run dev` (development) or `npm run build` (production).
+
+## Admin panel
+
+The Filament admin panel lives at **`/admin`** (e.g. http://localhost:8000/admin).
+
+Create an admin user:
+
+```bash
+php artisan make:filament-user
+```
+
+Access is gated by the `ADMIN_EMAILS` env variable — a comma-separated allowlist of emails permitted into `/admin`. Leave it empty to allow any existing user.
+
+From the panel you manage all site content: blog posts, services, the homepage (hero, CTA, treatment cards, testimonials, process steps, galleries, videos, stats, patient results), offices, and social links.
+
+## Configuration
+
+Key settings in `.env` (see `.env.example` for the full list):
+
+**Site & contact**
+
+```dotenv
+SITE_PHONE=
+SITE_WHATSAPP=
+SITE_EMAIL=
+ADMIN_EMAILS=          # comma-separated allowlist for /admin
+```
+
+**SEO & deployment**
+
+```dotenv
+SITE_INDEXABLE=true    # false on staging → whole site is noindex,nofollow
+HSTS_ENABLED=false     # true only at go-live on a permanent HTTPS domain
+GTM_ID=
+GOOGLE_SITE_VERIFICATION=
+BING_SITE_VERIFICATION=
+```
+
+**Media storage (Cloudflare R2 / S3)** — optional; defaults to local disk
+
+```dotenv
+R2_ACCESS_KEY_ID=
+R2_SECRET_ACCESS_KEY=
+R2_BUCKET=
+R2_ENDPOINT=
+R2_PUBLIC_URL=
+```
+
+### Using MySQL instead of SQLite
+
+Set the connection in `.env` and re-run migrations:
+
+```dotenv
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=turkeymed
+DB_USERNAME=root
+DB_PASSWORD=
+```
+
+## URL structure & localization
+
+English is the default language and has no URL prefix; other languages are served under a two-letter locale prefix.
+
+```
+/blog/{category}/{slug}              English blog post
+/{locale}/blog/{category}/{slug}     Localized blog post
+/services/{category}/{slug}          English service page
+/{locale}/services/{category}/{slug} Localized service page
+/about, /contact                     Static pages (also localized)
+```
+
+SEO endpoints are generated dynamically: `/sitemap.xml`, `/feed.xml`, and `/robots.txt` (which respects `SITE_INDEXABLE`). Legacy WordPress URLs are 301-redirected via a redirects table (`HandleRedirects` middleware).
+
+## Design system
+
+All UI follows the **Aurora** design system — the single source of truth for visual design. Tokens live in `resources/css/app.css` (`@theme`), with the full visual reference at `resources/design-system/aurora-reference.html`. Reusable Blade components live under `resources/views/components` (`x-layout.*`, `x-ui.*`, `x-home.*`, `x-service.*`, etc.). See `CLAUDE.md` for the complete component catalog and design rules. Never hardcode colors, fonts, or spacing — use the token utilities.
+
+## Testing & code style
+
+```bash
+composer test          # clears config, then runs the PHPUnit suite
+php artisan test        # run tests directly
+vendor/bin/pint         # auto-fix code style (Laravel Pint)
+```
+
+## Building for production
+
+```bash
+composer install --no-dev --optimize-autoloader
+npm run build
+php artisan migrate --force
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+```
+
+At go-live, set `SITE_INDEXABLE=true` and `HSTS_ENABLED=true` on the live domain (keep both off on staging).
