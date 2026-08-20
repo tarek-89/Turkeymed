@@ -41,6 +41,7 @@ class ManageOrganizationPage extends Page
             'og_image' => Setting::get('org.og_image'),
             'accreditations' => self::linesToText(Setting::get('org.accreditations', [])),
             'medical_specialties' => self::linesToText(Setting::get('org.medical_specialties', [])),
+            'llms_summary' => Setting::get('llms.summary'),
         ]);
     }
 
@@ -100,6 +101,16 @@ class ManageOrganizationPage extends Page
                             ->rows(4)
                             ->placeholder("Hair Transplant Surgery\nDentistry"),
                     ]),
+
+                Section::make('AI overview (llms.txt)')
+                    ->description('The one- or two-sentence summary at the top of /llms.txt — the line AI assistants weight most when describing you. Leave blank to use the default. Plain text, no links.')
+                    ->components([
+                        Textarea::make('llms_summary')
+                            ->hiddenLabel()
+                            ->rows(3)
+                            ->maxLength(500)
+                            ->placeholder('TurkeyMed coordinates hair transplant, dental and aesthetic treatments in Türkiye for international patients, with multilingual patient support.'),
+                    ]),
             ])
             ->statePath('data');
     }
@@ -115,6 +126,7 @@ class ManageOrganizationPage extends Page
         Setting::set('org.og_image', $state['og_image'] ?? null);
         Setting::set('org.accreditations', self::textToLines($state['accreditations'] ?? null));
         Setting::set('org.medical_specialties', self::textToLines($state['medical_specialties'] ?? null));
+        Setting::set('llms.summary', filled($state['llms_summary'] ?? null) ? trim((string) $state['llms_summary']) : null);
 
         Notification::make()
             ->title('Organization settings saved')

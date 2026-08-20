@@ -43,13 +43,6 @@
                 </span>
             </div>
 
-            <x-content.byline
-                class="mt-5 justify-center"
-                :author="$post->createdBy"
-                :author-name="$post->author"
-                :updated="$post->updated_at"
-                :language="$post->language"
-            />
         </header>
 
         @if ($post->summary)

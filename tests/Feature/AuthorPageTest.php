@@ -19,7 +19,7 @@ class AuthorPageTest extends TestCase
         $this->withoutVite();
     }
 
-    public function test_post_page_shows_byline_and_author_schema(): void
+    public function test_post_page_hides_author_from_byline_and_schema(): void
     {
         $author = User::factory()->author()->create(['name' => 'Dr. Mehmet Demir', 'credentials' => 'MD']);
         $post = Post::factory()->create(['created_by' => $author->id]);
@@ -27,10 +27,10 @@ class AuthorPageTest extends TestCase
         $response = $this->get($post->url());
 
         $response->assertOk();
-        $response->assertSee('Dr. Mehmet Demir', false);
-        $response->assertSee(__('content.written_by'), false);
         $response->assertSee('"@type":"BlogPosting"', false);
-        $response->assertSee('"@type":"Person"', false);
+        $response->assertDontSee('Dr. Mehmet Demir', false);
+        $response->assertDontSee(__('content.written_by'), false);
+        $response->assertDontSee('"@type":"Person"', false);
     }
 
     public function test_author_profile_page_is_gone(): void

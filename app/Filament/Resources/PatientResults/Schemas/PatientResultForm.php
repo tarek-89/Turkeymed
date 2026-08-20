@@ -6,6 +6,7 @@ use App\Models\Service;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Section;
@@ -60,6 +61,14 @@ class PatientResultForm
                             ->maxLength(100)
                             ->placeholder('After — month 12')
                             ->helperText('Optional. Defaults to a translated "After".'),
+
+                        Textarea::make('consent_note')
+                            ->label('Description text')
+                            ->columnSpanFull()
+                            ->rows(4)
+                            ->maxLength(500)
+                            ->placeholder('A consented patient result from a partner clinic. Drag the handle to compare — never stock, never retouched. Every gallery image is published with written patient consent.')
+                            ->helperText('Optional. The paragraph shown beside the slider. Leave blank to use the default translated text.'),
                     ]),
 
                 Section::make('Case details')

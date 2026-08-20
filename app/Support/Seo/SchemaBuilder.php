@@ -8,7 +8,6 @@ use App\Models\Service;
 use App\Models\Setting;
 use App\Models\SocialLink;
 use App\Models\Testimonial;
-use App\Models\User;
 
 /**
  * Builds the sitewide JSON-LD entity graph (MedicalOrganization + WebSite).
@@ -135,29 +134,8 @@ class SchemaBuilder
     }
 
     /**
-     * A Person entity for an author, with credentials and profiles.
-     *
-     * @return array<string, mixed>
-     */
-    public static function person(User $author, ?string $locale = null): array
-    {
-        $locale ??= app()->getLocale();
-
-        $jobTitle = trim(implode(', ', array_filter([$author->title, $author->credentials])));
-
-        return array_filter([
-            '@type' => 'Person',
-            'name' => $author->name,
-            'jobTitle' => $jobTitle !== '' ? $jobTitle : null,
-            'description' => $author->translate('bio', $locale),
-            'image' => $author->photoUrl(),
-            'sameAs' => $author->profileLinks(),
-        ], static fn ($value): bool => $value !== null && $value !== '' && $value !== []);
-    }
-
-    /**
-     * BlogPosting for an article, with the author Person entity and a
-     * reference to the sitewide organization as publisher.
+     * BlogPosting for an article, with a reference to the sitewide
+     * organization as publisher.
      *
      * @return array<string, mixed>
      */
@@ -173,7 +151,6 @@ class SchemaBuilder
             'mainEntityOfPage' => $post->url(),
             'datePublished' => $post->published_at?->toIso8601String(),
             'dateModified' => $post->updated_at?->toIso8601String(),
-            'author' => self::authorEntity($post->createdBy, $post->author, $locale),
             'publisher' => ['@id' => url('/').'#organization'],
             'image' => $post->featuredImageUrl(),
             'description' => $post->metaDescription(),
@@ -190,12 +167,6 @@ class SchemaBuilder
     {
         $locale ??= app()->getLocale();
 
-        $procedure = array_filter([
-            '@type' => 'MedicalProcedure',
-            'name' => $service->title,
-            'description' => $service->metaDescription(),
-        ], static fn ($value): bool => $value !== null && $value !== '');
-
         return array_filter([
             '@context' => 'https://schema.org',
             '@type' => 'MedicalWebPage',
@@ -206,26 +177,62 @@ class SchemaBuilder
             'image' => $service->featuredImageUrl(),
             'datePublished' => $service->published_at?->toIso8601String(),
             'dateModified' => $service->updated_at?->toIso8601String(),
-            'author' => self::authorEntity($service->createdBy, $service->author, $locale),
-            'about' => $procedure,
+            // lastReviewed tracks the last update to this page.
+            'lastReviewed' => $service->updated_at?->toIso8601String(),
+            'about' => self::procedure($service),
             'publisher' => ['@id' => url('/').'#organization'],
         ], static fn ($value): bool => $value !== null && $value !== '' && $value !== []);
     }
 
     /**
-     * Prefer the credentialed user profile; fall back to the legacy name string.
+     * The MedicalProcedure entity for a service. Only schema.org-valid
+     * properties are emitted; the expected prognosis (no native property) is
+     * folded into the description so the information is still exposed to answer
+     * engines. The procedure type maps to a strictly-valid schema.org form:
+     * "surgical" promotes @type to SurgicalProcedure, while non-invasive and
+     * percutaneous use the MedicalProcedureType enumeration. Empty fields are
+     * stripped.
      *
-     * @return array<string, mixed>|null
+     * @return array<string, mixed>
      */
-    private static function authorEntity(?User $author, ?string $legacyName, string $locale): ?array
+    private static function procedure(Service $service): array
     {
-        if ($author) {
-            return self::person($author, $locale);
-        }
+        $description = trim(implode(' ', array_filter([
+            $service->metaDescription(),
+            self::string($service->procedure_expected_prognosis),
+        ])));
 
-        return ($legacyName !== null && trim($legacyName) !== '')
-            ? ['@type' => 'Person', 'name' => $legacyName]
-            : null;
+        [$type, $procedureType] = self::procedureTypeSchema($service->procedure_type);
+
+        return array_filter([
+            '@type' => $type,
+            'name' => $service->title,
+            'description' => $description !== '' ? $description : null,
+            'procedureType' => $procedureType,
+            'bodyLocation' => self::string($service->procedure_body_location),
+            'howPerformed' => self::string($service->procedure_how_performed),
+            'preparation' => self::string($service->procedure_preparation),
+            'followup' => self::string($service->procedure_followup),
+        ], static fn ($value): bool => $value !== null && $value !== '');
+    }
+
+    /**
+     * Map the stored procedure-type value to a schema.org-valid [@type,
+     * procedureType] pair. "surgical" has no MedicalProcedureType enum member,
+     * so it is expressed via the SurgicalProcedure subtype; the others map to
+     * the enumeration URL. Unknown/empty values fall back to MedicalProcedure
+     * with no procedureType.
+     *
+     * @return array{0: string, 1: ?string}
+     */
+    private static function procedureTypeSchema(mixed $value): array
+    {
+        return match (self::string($value)) {
+            'surgical' => ['SurgicalProcedure', null],
+            'noninvasive' => ['MedicalProcedure', 'https://schema.org/NoninvasiveProcedure'],
+            'percutaneous' => ['MedicalProcedure', 'https://schema.org/PercutaneousProcedure'],
+            default => ['MedicalProcedure', null],
+        };
     }
 
     private static function logoUrl(): string

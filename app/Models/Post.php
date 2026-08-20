@@ -218,9 +218,26 @@ class Post extends Model
             return $this->meta_description;
         }
 
-        $fallback = $this->summary ?: $this->excerpt;
+        $fallback = $this->summary ?: $this->excerpt ?: self::descriptionFromBody($this->body);
 
         return $fallback ? str($fallback)->limit(155)->toString() : null;
+    }
+
+    /**
+     * Derive a plain-text description from HTML body content: strip tags,
+     * decode entities and collapse whitespace. Returns null when the body is
+     * empty. Used as the last meta-description fallback so pages/snippets and
+     * llms.txt never fall back to a bare title.
+     */
+    public static function descriptionFromBody(?string $html): ?string
+    {
+        if ($html === null || trim($html) === '') {
+            return null;
+        }
+
+        $text = trim((string) preg_replace('/\s+/', ' ', html_entity_decode(strip_tags($html), ENT_QUOTES | ENT_HTML5, 'UTF-8')));
+
+        return $text !== '' ? $text : null;
     }
 
     /**

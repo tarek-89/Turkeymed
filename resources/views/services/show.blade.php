@@ -33,7 +33,7 @@
     {{-- Hero --}}
     <x-ui.section :tight="true">
         <x-ui.page-hero :eyebrow="$service->category?->name" :title="$service->title">
-            {{ $service->summary ?: $service->excerpt }}
+            {{ $service->summary ?: $service->excerpt ?: $service->metaDescription() }}
 
             <x-slot:actions>
                 <x-ui.button :href="\App\Support\Navigation::contactUrl()" variant="primary">
@@ -65,13 +65,6 @@
     {{-- Body + sidebar --}}
     <x-ui.section :tight="true">
         <x-service.layout>
-            <x-content.byline
-                class="mb-6"
-                :author="$service->createdBy"
-                :author-name="$service->author"
-                :updated="$service->updated_at"
-                :language="$service->language"
-            />
 
             <x-ui.prose>
                 {!! $service->body !!}

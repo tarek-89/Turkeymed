@@ -98,10 +98,16 @@
     {{-- STATS --}}
     @if ($stats->isNotEmpty())
         <x-ui.section :tight="true">
-            <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-                @foreach ($stats as $stat)
-                    <x-ui.stat :value="$stat->value" :label="$stat->translate('label')" />
-                @endforeach
+            <div class="flex justify-center">
+                <div class="grid w-full max-w-xl grid-cols-2 gap-y-8 rounded-2xl border border-line bg-white px-6 py-8 shadow-md sm:flex sm:w-auto sm:max-w-none">
+                    @foreach ($stats as $stat)
+                        <x-ui.stat
+                            :value="$stat->value"
+                            :label="$stat->translate('label')"
+                            class="px-8 sm:border-line sm:px-10 sm:[&:not(:first-child)]:border-s"
+                        />
+                    @endforeach
+                </div>
             </div>
         </x-ui.section>
     @endif

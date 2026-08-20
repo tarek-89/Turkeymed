@@ -24,6 +24,7 @@ class RobotsController extends Controller
                 'Disallow: /admin',
                 '',
                 'Sitemap: '.url('/sitemap.xml'),
+                '# llms.txt: '.url('/llms.txt'),
                 '',
             ]);
         }

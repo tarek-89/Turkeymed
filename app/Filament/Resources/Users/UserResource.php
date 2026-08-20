@@ -12,7 +12,6 @@ use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Tabs;
@@ -73,14 +72,9 @@ class UserResource extends Resource
                 ]),
 
             Section::make('Author profile')
-                ->description('Public, credentialed byline shown on posts and services. Publish to expose the /authors profile page.')
+                ->description('Credentialed byline shown on posts and services, and used in the Person structured data (author E-E-A-T) that search engines and AI assistants read.')
                 ->columns(2)
                 ->components([
-                    TextInput::make('slug')
-                        ->maxLength(150)
-                        ->unique(ignoreRecord: true)
-                        ->helperText('URL path of the public profile: /authors/{slug}.'),
-
                     TextInput::make('credentials')
                         ->maxLength(150)
                         ->placeholder('MD, Hair Transplant Surgeon')
@@ -107,14 +101,10 @@ class UserResource extends Resource
                         ->placeholder('https://linkedin.com/in/...')
                         ->helperText('Press Enter after each URL. Used for the Person sameAs in structured data.')
                         ->columnSpanFull(),
-
-                    Toggle::make('is_published')
-                        ->label('Published author profile')
-                        ->default(false),
                 ]),
 
             Section::make('Biography')
-                ->description('A short professional bio per language, shown on the author profile page.')
+                ->description('A short professional bio per language, used in the author byline and Person structured data.')
                 ->components([
                     Tabs::make('Bio translations')->tabs(
                         collect(Locale::codes())->map(fn (string $code): Tab => Tab::make(strtoupper($code))

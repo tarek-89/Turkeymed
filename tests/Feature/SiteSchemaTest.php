@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Office;
+use App\Models\Service;
 use App\Models\Setting;
 use App\Models\SocialLink;
 use App\Support\Seo\SchemaBuilder;
@@ -86,5 +87,67 @@ class SiteSchemaTest extends TestCase
 
         $this->assertSame('WebSite', $website['@type']);
         $this->assertSame(url('/').'#organization', $website['publisher']['@id']);
+    }
+
+    public function test_medical_web_page_emits_enriched_procedure_fields_when_set(): void
+    {
+        $service = Service::factory()->create([
+            'meta_description' => 'A hair restoration procedure.',
+            'procedure_type' => 'surgical',
+            'procedure_body_location' => 'Scalp',
+            'procedure_how_performed' => 'Follicular units are extracted and implanted.',
+            'procedure_preparation' => 'Avoid blood thinners for one week.',
+            'procedure_followup' => 'Gentle washing after 48 hours.',
+            'procedure_expected_prognosis' => 'Full regrowth within 12 months.',
+        ]);
+
+        $page = SchemaBuilder::medicalWebPage($service, 'en');
+        $procedure = $page['about'];
+
+        // "surgical" promotes the type to the valid SurgicalProcedure subtype.
+        $this->assertSame('SurgicalProcedure', $procedure['@type']);
+        $this->assertSame('Scalp', $procedure['bodyLocation']);
+        $this->assertSame('Follicular units are extracted and implanted.', $procedure['howPerformed']);
+        $this->assertSame('Avoid blood thinners for one week.', $procedure['preparation']);
+        $this->assertSame('Gentle washing after 48 hours.', $procedure['followup']);
+
+        // Expected prognosis has no native MedicalProcedure property, so it is
+        // folded into the description rather than dropped.
+        $this->assertStringContainsString('Full regrowth within 12 months.', $procedure['description']);
+
+        // Medical review trust signals.
+        $this->assertArrayHasKey('lastReviewed', $page);
+        $this->assertArrayHasKey('reviewedBy', $page);
+    }
+
+    public function test_procedure_type_maps_to_valid_schema_org_forms(): void
+    {
+        $noninvasive = Service::factory()->create(['procedure_type' => 'noninvasive']);
+        $percutaneous = Service::factory()->create(['procedure_type' => 'percutaneous']);
+
+        $noninvasiveProcedure = SchemaBuilder::medicalWebPage($noninvasive, 'en')['about'];
+        $percutaneousProcedure = SchemaBuilder::medicalWebPage($percutaneous, 'en')['about'];
+
+        $this->assertSame('MedicalProcedure', $noninvasiveProcedure['@type']);
+        $this->assertSame('https://schema.org/NoninvasiveProcedure', $noninvasiveProcedure['procedureType']);
+
+        $this->assertSame('MedicalProcedure', $percutaneousProcedure['@type']);
+        $this->assertSame('https://schema.org/PercutaneousProcedure', $percutaneousProcedure['procedureType']);
+    }
+
+    public function test_medical_web_page_strips_empty_procedure_fields(): void
+    {
+        $service = Service::factory()->create([
+            'meta_description' => 'A procedure with no extra detail.',
+        ]);
+
+        $procedure = SchemaBuilder::medicalWebPage($service, 'en')['about'];
+
+        $this->assertSame('MedicalProcedure', $procedure['@type']);
+        $this->assertArrayNotHasKey('bodyLocation', $procedure);
+        $this->assertArrayNotHasKey('howPerformed', $procedure);
+        $this->assertArrayNotHasKey('preparation', $procedure);
+        $this->assertArrayNotHasKey('followup', $procedure);
+        $this->assertArrayNotHasKey('procedureType', $procedure);
     }
 }

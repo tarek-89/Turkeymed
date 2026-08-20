@@ -88,6 +88,51 @@ class ServiceForm
                             ->defaultItems(0),
                     ]),
 
+                Section::make('Medical procedure details')
+                    ->description('Optional. Feeds the MedicalProcedure structured data that search engines and AI assistants cite for "what is / how is / recovery" queries. Fill in this page\'s language; leave blank if not applicable.')
+                    ->columnSpan(2)
+                    ->collapsed()
+                    ->columns(2)
+                    ->components([
+                        Select::make('procedure_type')
+                            ->label('Procedure type')
+                            ->options([
+                                'surgical' => 'Surgical',
+                                'noninvasive' => 'Non-invasive',
+                                'percutaneous' => 'Percutaneous',
+                            ])
+                            ->native(false)
+                            ->helperText('Sets the schema.org procedure type. Surgical emits a SurgicalProcedure; the others map to the MedicalProcedureType enumeration.'),
+
+                        TextInput::make('procedure_body_location')
+                            ->label('Body location')
+                            ->maxLength(255)
+                            ->placeholder('Scalp')
+                            ->helperText('Area of the body the procedure targets.'),
+
+                        Textarea::make('procedure_how_performed')
+                            ->label('How it is performed')
+                            ->rows(3)
+                            ->columnSpanFull()
+                            ->helperText('Brief, factual description of the technique.'),
+
+                        Textarea::make('procedure_preparation')
+                            ->label('Preparation')
+                            ->rows(3)
+                            ->helperText('What the patient does beforehand.'),
+
+                        Textarea::make('procedure_followup')
+                            ->label('Follow-up / aftercare')
+                            ->rows(3)
+                            ->helperText('Post-procedure care and follow-up.'),
+
+                        Textarea::make('procedure_expected_prognosis')
+                            ->label('Expected prognosis / results')
+                            ->rows(3)
+                            ->columnSpanFull()
+                            ->helperText('Typical outcome and recovery timeline.'),
+                    ]),
+
                 Section::make('Publishing')
                     ->columnSpan(1)
                     ->components([

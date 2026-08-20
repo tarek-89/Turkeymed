@@ -4,6 +4,7 @@ use App\Http\Controllers\AboutController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\FeedController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\LlmsController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\RobotsController;
 use App\Http\Controllers\ServiceController;
@@ -40,6 +41,9 @@ Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap')
 
 // RSS feed of the latest blog posts
 Route::get('/feed.xml', [FeedController::class, 'index'])->name('feed');
+
+// llms.txt — curated markdown map of the site for AI agents (respects SITE_INDEXABLE)
+Route::get('/llms.txt', [LlmsController::class, 'index'])->name('llms');
 
 /*
 |--------------------------------------------------------------------------

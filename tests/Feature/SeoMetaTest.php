@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Post;
+use App\Models\Service;
 use App\Models\Setting;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -96,5 +97,47 @@ class SeoMetaTest extends TestCase
         $post = Post::factory()->create(['title' => str_repeat('Hair Transplant ', 8), 'meta_title' => null]);
 
         $this->assertLessThanOrEqual(60, mb_strlen($post->metaTitle()));
+    }
+
+    public function test_meta_description_falls_back_to_clean_body_text(): void
+    {
+        $post = Post::factory()->create([
+            'meta_description' => null,
+            'summary' => null,
+            'excerpt' => null,
+            'body' => '<h2>Intro</h2><p>FUE hair transplant is a modern, scarless technique performed under local anaesthetic.</p>',
+        ]);
+
+        $description = $post->metaDescription();
+
+        $this->assertNotNull($description);
+        // Tags stripped, no raw HTML.
+        $this->assertStringNotContainsString('<', $description);
+        $this->assertStringContainsString('FUE hair transplant is a modern', $description);
+        $this->assertLessThanOrEqual(155, mb_strlen($description));
+    }
+
+    public function test_meta_description_is_null_when_no_source_content(): void
+    {
+        $post = Post::factory()->create([
+            'meta_description' => null,
+            'summary' => null,
+            'excerpt' => null,
+            'body' => null,
+        ]);
+
+        $this->assertNull($post->metaDescription());
+    }
+
+    public function test_service_meta_description_also_falls_back_to_body(): void
+    {
+        $service = Service::factory()->create([
+            'meta_description' => null,
+            'summary' => null,
+            'excerpt' => null,
+            'body' => '<p>Gastric sleeve surgery reduces stomach size to support long-term weight loss.</p>',
+        ]);
+
+        $this->assertStringContainsString('Gastric sleeve surgery', (string) $service->metaDescription());
     }
 }

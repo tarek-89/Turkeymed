@@ -142,7 +142,7 @@ class Service extends Model
             return $this->meta_description;
         }
 
-        $fallback = $this->summary ?: $this->excerpt;
+        $fallback = $this->summary ?: $this->excerpt ?: Post::descriptionFromBody($this->body);
 
         return $fallback ? str($fallback)->limit(155)->toString() : null;
     }
