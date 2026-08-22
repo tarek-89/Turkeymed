@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\PatientResults\Schemas;
 
 use App\Models\Service;
+use App\Support\Locale;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
@@ -10,6 +11,8 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Tabs;
+use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
@@ -50,25 +53,33 @@ class PatientResultForm
                             ->visibility('private')
                             ->maxSize(4096),
 
-                        TextInput::make('before_label')
-                            ->label('Before label override')
-                            ->maxLength(100)
-                            ->placeholder('Before')
-                            ->helperText('Optional. Defaults to a translated "Before".'),
-
-                        TextInput::make('after_label')
-                            ->label('After label override')
-                            ->maxLength(100)
-                            ->placeholder('After — month 12')
-                            ->helperText('Optional. Defaults to a translated "After".'),
-
-                        Textarea::make('consent_note')
-                            ->label('Description text')
+                        Tabs::make('Translations')
                             ->columnSpanFull()
-                            ->rows(4)
-                            ->maxLength(500)
-                            ->placeholder('A consented patient result from a partner clinic. Drag the handle to compare — never stock, never retouched. Every gallery image is published with written patient consent.')
-                            ->helperText('Optional. The paragraph shown beside the slider. Leave blank to use the default translated text.'),
+                            ->tabs(
+                                collect(Locale::codes())->map(fn (string $code): Tab => Tab::make(strtoupper($code))
+                                    ->columns(2)
+                                    ->schema([
+                                        TextInput::make("before_label.{$code}")
+                                            ->label('Before label override')
+                                            ->maxLength(100)
+                                            ->placeholder('Before')
+                                            ->helperText('Optional. Defaults to a translated "Before".'),
+
+                                        TextInput::make("after_label.{$code}")
+                                            ->label('After label override')
+                                            ->maxLength(100)
+                                            ->placeholder('After — month 12')
+                                            ->helperText('Optional. Defaults to a translated "After".'),
+
+                                        Textarea::make("consent_note.{$code}")
+                                            ->label('Description text')
+                                            ->columnSpanFull()
+                                            ->rows(4)
+                                            ->maxLength(500)
+                                            ->placeholder('A consented patient result from a partner clinic. Drag the handle to compare — never stock, never retouched. Every gallery image is published with written patient consent.')
+                                            ->helperText('Optional. The paragraph shown beside the slider. Leave blank to use the default translated text.'),
+                                    ]))->all(),
+                            ),
                     ]),
 
                 Section::make('Case details')

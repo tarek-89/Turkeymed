@@ -28,8 +28,8 @@
                             <x-ui.before-after
                                 :before="$result->beforeImageUrl()"
                                 :after="$result->afterImageUrl()"
-                                :before-label="$result->before_label"
-                                :after-label="$result->after_label"
+                                :before-label="$result->translate('before_label')"
+                                :after-label="$result->translate('after_label')"
                                 :alt="__('patient_results.eyebrow').' — '.$headline"
                             />
 
@@ -38,7 +38,7 @@
 
                                 <x-ui.heading level="h2" class="mt-2.5">{{ $headline }}</x-ui.heading>
 
-                                <p class="lead mt-3.5">{{ $result->consent_note ?: __('patient_results.consent_note') }}</p>
+                                <p class="lead mt-3.5">{{ $result->translate('consent_note') ?: __('patient_results.consent_note') }}</p>
 
                                 @if ($results->count() > 1)
                                     <div class="mt-7 flex gap-2.5">

@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\HasTranslatedFields;
+use Database\Factories\PatientResultFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -9,8 +11,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class PatientResult extends Model
 {
-    /** @use HasFactory<\Database\Factories\PatientResultFactory> */
+    /** @use HasFactory<PatientResultFactory> */
     use HasFactory;
+
+    use HasTranslatedFields;
 
     protected $guarded = [];
 
@@ -18,6 +22,9 @@ class PatientResult extends Model
     protected function casts(): array
     {
         return [
+            'before_label' => 'array',
+            'after_label' => 'array',
+            'consent_note' => 'array',
             'consent_confirmed' => 'boolean',
             'is_published' => 'boolean',
         ];
