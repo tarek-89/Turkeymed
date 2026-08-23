@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Post;
 use App\Models\Service;
 use App\Models\ServiceCategory;
+use App\Support\Locale;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 
@@ -55,7 +56,7 @@ class ServiceController extends Controller
         $categories = ServiceCategory::query()
             ->withCount(['services' => fn ($query) => $query->published()->language($language)])
             ->orderBy('sort_order')
-            ->orderBy('name')
+            ->orderByRaw("JSON_UNQUOTE(JSON_EXTRACT(name, '$.\"".Locale::DEFAULT."\"'))")
             ->get()
             ->filter(fn (ServiceCategory $category): bool => $category->services_count > 0)
             ->values();
@@ -129,7 +130,7 @@ class ServiceController extends Controller
     private function resolveCategory(string $categorySlug): ServiceCategory
     {
         if ($categorySlug === 'uncategorized') {
-            return new ServiceCategory(['name' => 'Uncategorized', 'slug' => 'uncategorized']);
+            return new ServiceCategory(['name' => [Locale::DEFAULT => 'Uncategorized'], 'slug' => 'uncategorized']);
         }
 
         return ServiceCategory::where('slug', $categorySlug)->firstOrFail();

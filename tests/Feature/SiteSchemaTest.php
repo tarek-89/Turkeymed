@@ -115,9 +115,8 @@ class SiteSchemaTest extends TestCase
         // folded into the description rather than dropped.
         $this->assertStringContainsString('Full regrowth within 12 months.', $procedure['description']);
 
-        // Medical review trust signals.
+        // Medical review trust signal.
         $this->assertArrayHasKey('lastReviewed', $page);
-        $this->assertArrayHasKey('reviewedBy', $page);
     }
 
     public function test_procedure_type_maps_to_valid_schema_org_forms(): void

@@ -4,6 +4,8 @@ namespace App\Filament\Resources\Posts\Tables;
 
 use App\Filament\Resources\Posts\PostResource;
 use App\Models\Post;
+use App\Models\ServiceCategory;
+use App\Support\Locale;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -79,7 +81,8 @@ class PostsTable
             ->filters([
                 SelectFilter::make('service_category_id')
                     ->label('Category')
-                    ->relationship('category', 'name'),
+                    ->relationship('category', 'name', fn ($query) => $query->orderBy('sort_order'))
+                    ->getOptionLabelFromRecordUsing(fn (ServiceCategory $record): ?string => $record->translate('name', Locale::DEFAULT)),
 
                 SelectFilter::make('language')
                     ->options(fn (): array => Post::languageOptions()),

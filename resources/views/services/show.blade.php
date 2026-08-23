@@ -13,7 +13,7 @@
             ['label' => __('common.home'), 'href' => \App\Support\Navigation::homeUrl()],
             ['label' => __('nav.treatments'), 'href' => \App\Support\Navigation::servicesUrl()],
             $service->category
-                ? ['label' => $service->category->name, 'href' => $service->category->serviceUrl($service->language)]
+                ? ['label' => $service->category->translate('name', $service->language), 'href' => $service->category->serviceUrl($service->language)]
                 : null,
             ['label' => $service->title],
         ]));
@@ -32,7 +32,7 @@
 
     {{-- Hero --}}
     <x-ui.section :tight="true">
-        <x-ui.page-hero :eyebrow="$service->category?->name" :title="$service->title">
+        <x-ui.page-hero :eyebrow="$service->category?->translate('name', $service->language)" :title="$service->title">
             {{ $service->summary ?: $service->excerpt ?: $service->metaDescription() }}
 
             <x-slot:actions>
@@ -72,7 +72,7 @@
 
             <x-slot:aside>
                 <x-service.consultation-card />
-                <x-service.related-links :services="$related" :heading="$service->category?->name" />
+                <x-service.related-links :services="$related" :heading="$service->category?->translate('name', $service->language)" />
             </x-slot:aside>
         </x-service.layout>
     </x-ui.section>

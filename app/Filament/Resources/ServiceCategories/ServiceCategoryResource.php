@@ -4,18 +4,22 @@ namespace App\Filament\Resources\ServiceCategories;
 
 use App\Filament\Resources\ServiceCategories\Pages\ListServiceCategories;
 use App\Models\ServiceCategory;
+use App\Support\Locale;
 use BackedEnum;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
-use UnitEnum;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Tabs;
+use Filament\Schemas\Components\Tabs\Tab;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
-use Illuminate\Validation\Rules\Unique;
+use UnitEnum;
 
 class ServiceCategoryResource extends Resource
 {
@@ -27,20 +31,25 @@ class ServiceCategoryResource extends Resource
 
     protected static ?int $navigationSort = 3;
 
-    protected static ?string $recordTitleAttribute = 'name';
-
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
-            TextInput::make('name')
-                ->required()
-                ->maxLength(200)
-                ->live(onBlur: true)
-                ->afterStateUpdated(function (string $operation, ?string $state, $set, $get): void {
-                    if ($operation === 'create' && blank($get('slug'))) {
-                        $set('slug', Str::slug($state ?? ''));
-                    }
-                }),
+            Tabs::make('Translations')
+                ->tabs(
+                    collect(Locale::codes())->map(fn (string $code): Tab => Tab::make(strtoupper($code))
+                        ->schema([
+                            TextInput::make("name.{$code}")
+                                ->label('Name')
+                                ->required($code === Locale::DEFAULT)
+                                ->maxLength(200)
+                                ->live(onBlur: true)
+                                ->afterStateUpdated(function (string $operation, ?string $state, Get $get, Set $set) use ($code): void {
+                                    if ($operation === 'create' && $code === Locale::DEFAULT && blank($get('slug'))) {
+                                        $set('slug', Str::slug($state ?? ''));
+                                    }
+                                }),
+                        ]))->all(),
+                ),
 
             TextInput::make('slug')
                 ->required()
@@ -59,8 +68,8 @@ class ServiceCategoryResource extends Resource
             ->defaultSort('sort_order')
             ->columns([
                 TextColumn::make('name')
-                    ->searchable()
-                    ->sortable(),
+                    ->state(fn (ServiceCategory $record): ?string => $record->translate('name', 'en'))
+                    ->searchable(query: fn ($query, string $search) => $query->where('name', 'like', "%{$search}%")),
 
                 TextColumn::make('slug')
                     ->color('gray'),

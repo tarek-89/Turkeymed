@@ -70,7 +70,7 @@ class TechnicalSeoTest extends TestCase
     public function test_llms_txt_lists_key_pages_and_categorised_services_when_indexable(): void
     {
         config(['site.indexable' => true]);
-        $category = ServiceCategory::factory()->create(['name' => 'Hair Transplant', 'slug' => 'hair-transplant']);
+        $category = ServiceCategory::factory()->create(['name' => ['en' => 'Hair Transplant'], 'slug' => 'hair-transplant']);
         $service = Service::factory()->inCategory($category)->create(['title' => 'FUE Hair Transplant']);
 
         $response = $this->get('/llms.txt');
@@ -102,7 +102,7 @@ class TechnicalSeoTest extends TestCase
     public function test_llms_txt_decodes_html_entities_in_titles(): void
     {
         config(['site.indexable' => true]);
-        $category = ServiceCategory::factory()->create(['name' => 'Dental']);
+        $category = ServiceCategory::factory()->create(['name' => ['en' => 'Dental']]);
         Service::factory()->inCategory($category)->create(['title' => 'Terms &amp; Conditions Review']);
 
         $response = $this->get('/llms.txt');

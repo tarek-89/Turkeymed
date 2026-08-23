@@ -21,7 +21,7 @@
                 ['label' => __('common.home'), 'href' => \App\Support\Navigation::homeUrl()],
                 ['label' => __('posts.blog'), 'href' => \App\Support\Navigation::blogUrl()],
                 $post->category
-                    ? ['label' => $post->category->name, 'href' => $post->category->blogUrl($post->language)]
+                    ? ['label' => $post->category->translate('name', $post->language), 'href' => $post->category->blogUrl($post->language)]
                     : null,
                 ['label' => $post->title],
             ]))"

@@ -60,7 +60,7 @@ class RoutingStructureTest extends TestCase
 
     public function test_the_blog_category_listing_renders(): void
     {
-        $category = ServiceCategory::factory()->create(['name' => 'Hair Transplant Surgery', 'slug' => 'hair-transplant-surgery']);
+        $category = ServiceCategory::factory()->create(['name' => ['en' => 'Hair Transplant Surgery'], 'slug' => 'hair-transplant-surgery']);
         $post = Post::factory()->inCategory($category)->create(['title' => 'Recovery Tips']);
 
         $this->get('/blog/hair-transplant-surgery')
@@ -71,7 +71,7 @@ class RoutingStructureTest extends TestCase
 
     public function test_the_services_index_lists_categories(): void
     {
-        $category = ServiceCategory::factory()->create(['name' => 'Hair Transplant Surgery']);
+        $category = ServiceCategory::factory()->create(['name' => ['en' => 'Hair Transplant Surgery']]);
         Service::factory()->inCategory($category)->create();
 
         $this->get('/services')

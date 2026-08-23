@@ -14,7 +14,7 @@
             <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 @foreach ($categories as $category)
                     <x-ui.card :href="$category->serviceUrl($language)" :interactive="true" class="group flex flex-col">
-                        <h2 class="text-lg font-bold text-ink transition-colors duration-150 group-hover:text-cyan-800">{{ $category->name }}</h2>
+                        <h2 class="text-lg font-bold text-ink transition-colors duration-150 group-hover:text-cyan-800">{{ $category->translate('name', $language) }}</h2>
                         <p class="mt-2 text-sm text-muted">{{ trans_choice('services.category_count', $category->services_count) }}</p>
                     </x-ui.card>
                 @endforeach

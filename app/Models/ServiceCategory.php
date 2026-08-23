@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\HasTranslatedFields;
 use Database\Factories\ServiceCategoryFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -12,7 +13,17 @@ class ServiceCategory extends Model
     /** @use HasFactory<ServiceCategoryFactory> */
     use HasFactory;
 
+    use HasTranslatedFields;
+
     protected $guarded = [];
+
+    /** @return array<string, string> */
+    protected function casts(): array
+    {
+        return [
+            'name' => 'array',
+        ];
+    }
 
     /** @return HasMany<Service, $this> */
     public function services(): HasMany

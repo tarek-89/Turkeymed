@@ -82,7 +82,7 @@ class LlmsController extends Controller
             $lines[] = '';
 
             foreach ($categories as $category) {
-                $name = self::clean($category->name);
+                $name = self::clean((string) $category->translate('name', $code));
                 $lines[] = $this->link(
                     $category->serviceUrl($code),
                     $name,

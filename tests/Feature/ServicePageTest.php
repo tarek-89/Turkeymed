@@ -30,7 +30,7 @@ class ServicePageTest extends TestCase
 
     public function test_breadcrumb_includes_the_category_when_assigned(): void
     {
-        $category = ServiceCategory::factory()->create(['name' => 'Hair Transplant Surgery']);
+        $category = ServiceCategory::factory()->create(['name' => ['en' => 'Hair Transplant Surgery']]);
         $service = Service::factory()->inCategory($category)->create();
 
         $response = $this->get($service->url());

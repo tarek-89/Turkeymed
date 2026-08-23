@@ -4,6 +4,8 @@ namespace App\Filament\Resources\Services\Schemas;
 
 use App\Models\Post;
 use App\Models\Service;
+use App\Models\ServiceCategory;
+use App\Support\Locale;
 use App\Support\SeoAnalyzer;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
@@ -150,15 +152,15 @@ class ServiceForm
 
                         Select::make('service_category_id')
                             ->label('Category')
-                            ->relationship('category', 'name')
-                            ->searchable()
+                            ->relationship(
+                                name: 'category',
+                                titleAttribute: 'name',
+                                modifyQueryUsing: fn ($query) => $query->orderBy('sort_order'),
+                            )
+                            ->getOptionLabelFromRecordUsing(fn (ServiceCategory $record): ?string => $record->translate('name', Locale::DEFAULT))
+                            ->searchable(['name'])
                             ->preload()
-                            ->native(false)
-                            ->createOptionForm([
-                                TextInput::make('name')->required()->maxLength(200),
-                                TextInput::make('slug')->required()->maxLength(200),
-                                TextInput::make('sort_order')->numeric()->default(0),
-                            ]),
+                            ->native(false),
 
                         Select::make('language')
                             ->options(fn (): array => Post::languageOptions())

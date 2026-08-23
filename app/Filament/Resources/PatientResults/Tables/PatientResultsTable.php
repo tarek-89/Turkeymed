@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources\PatientResults\Tables;
 
+use App\Models\ServiceCategory;
+use App\Support\Locale;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -63,7 +65,8 @@ class PatientResultsTable
             ->filters([
                 SelectFilter::make('service_category_id')
                     ->label('Category')
-                    ->relationship('category', 'name'),
+                    ->relationship('category', 'name', fn ($query) => $query->orderBy('sort_order'))
+                    ->getOptionLabelFromRecordUsing(fn (ServiceCategory $record): ?string => $record->translate('name', Locale::DEFAULT)),
 
                 TernaryFilter::make('is_published')
                     ->label('Published'),

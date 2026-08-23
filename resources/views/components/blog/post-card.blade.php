@@ -60,7 +60,7 @@
 
     <div class="flex flex-wrap items-center gap-2 text-xs font-semibold text-muted">
         @if ($post->category)
-            <x-ui.badge variant="soft">{{ $post->category->name }}</x-ui.badge>
+            <x-ui.badge variant="soft">{{ $post->category->translate('name', $post->language) }}</x-ui.badge>
         @endif
         @if ($post->published_at)
             <time datetime="{{ $post->published_at->toDateString() }}">{{ $post->published_at->translatedFormat('M j, Y') }}</time>

@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\PatientResults\Schemas;
 
 use App\Models\Service;
+use App\Models\ServiceCategory;
 use App\Support\Locale;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\FileUpload;
@@ -87,9 +88,14 @@ class PatientResultForm
                     ->components([
                         Select::make('service_category_id')
                             ->label('Category')
-                            ->relationship('category', 'name')
+                            ->relationship(
+                                name: 'category',
+                                titleAttribute: 'name',
+                                modifyQueryUsing: fn ($query) => $query->orderBy('sort_order'),
+                            )
+                            ->getOptionLabelFromRecordUsing(fn (ServiceCategory $record): ?string => $record->translate('name', Locale::DEFAULT))
                             ->required()
-                            ->searchable()
+                            ->searchable(['name'])
                             ->preload()
                             ->native(false)
                             ->live()

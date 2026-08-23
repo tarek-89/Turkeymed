@@ -21,7 +21,7 @@ class CategoryPageTest extends TestCase
 
     public function test_category_page_lists_published_services_with_links(): void
     {
-        $category = ServiceCategory::factory()->create(['name' => 'Hair Transplant Surgery']);
+        $category = ServiceCategory::factory()->create(['name' => ['en' => 'Hair Transplant Surgery']]);
         $services = Service::factory()->count(2)->inCategory($category)->create();
 
         $response = $this->get('/services/'.$category->slug);

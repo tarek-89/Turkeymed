@@ -19,7 +19,7 @@ class ServiceCategoryFactory extends Factory
         $name = ucwords(fake()->unique()->words(2, true));
 
         return [
-            'name' => $name,
+            'name' => ['en' => $name],
             'slug' => Str::slug($name),
             'sort_order' => fake()->numberBetween(0, 20),
         ];

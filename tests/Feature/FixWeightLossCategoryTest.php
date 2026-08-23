@@ -14,8 +14,8 @@ class FixWeightLossCategoryTest extends TestCase
 
     private function seedMisfiledData(): array
     {
-        $bad = ServiceCategory::factory()->create(['name' => 'Services', 'slug' => 'services']);
-        $target = ServiceCategory::factory()->create(['name' => 'Weight Loss', 'slug' => 'weight-loss']);
+        $bad = ServiceCategory::factory()->create(['name' => ['en' => 'Services'], 'slug' => 'services']);
+        $target = ServiceCategory::factory()->create(['name' => ['en' => 'Weight Loss'], 'slug' => 'weight-loss']);
 
         $service = Service::factory()->inCategory($bad)->create([
             'title' => 'Gastric Sleeve Surgery',
@@ -76,7 +76,7 @@ class FixWeightLossCategoryTest extends TestCase
 
     public function test_it_fails_when_target_category_missing(): void
     {
-        ServiceCategory::factory()->create(['name' => 'Services', 'slug' => 'services']);
+        ServiceCategory::factory()->create(['name' => ['en' => 'Services'], 'slug' => 'services']);
 
         $this->artisan('services:fix-weight-loss-category')->assertFailed();
     }

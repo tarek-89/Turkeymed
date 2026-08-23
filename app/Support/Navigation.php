@@ -27,10 +27,10 @@ class Navigation
                 ->where('language', $locale)
                 ->orderBy('title')])
             ->orderBy('sort_order')
-            ->orderBy('name')
+            ->orderByRaw("JSON_UNQUOTE(JSON_EXTRACT(name, '$.\"".Locale::DEFAULT."\"'))")
             ->get()
             ->map(fn (ServiceCategory $category): array => [
-                'label' => $category->name,
+                'label' => $category->translate('name', $locale),
                 'url' => $category->url($locale),
                 'services' => $category->services
                     ->map(fn ($service): array => [

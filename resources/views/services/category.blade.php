@@ -1,13 +1,13 @@
 <x-layout.app
-    :title="$category->name.' - '.config('site.brand')"
-    :description="__('services.category_meta_description', ['category' => $category->name])"
+    :title="$category->translate('name', $language).' - '.config('site.brand')"
+    :description="__('services.category_meta_description', ['category' => $category->translate('name', $language)])"
     :canonical="$category->url($language)"
 >
     @php
         $jsonLd = [
             '@context' => 'https://schema.org',
             '@type' => 'ItemList',
-            'name' => $category->name,
+            'name' => $category->translate('name', $language),
             'inLanguage' => $language,
             'itemListElement' => $services->values()->map(fn ($service, $index) => [
                 '@type' => 'ListItem',
@@ -24,13 +24,13 @@
             class="pt-5"
             :items="[
                 ['label' => __('common.home'), 'href' => \App\Support\Navigation::homeUrl()],
-                ['label' => $category->name],
+                ['label' => $category->translate('name', $language)],
             ]"
         />
     </x-ui.container>
 
     <x-ui.section :tight="true">
-        <x-ui.section-heading :eyebrow="__('nav.treatments')" :title="$category->name" level="h1">
+        <x-ui.section-heading :eyebrow="__('nav.treatments')" :title="$category->translate('name', $language)" level="h1">
             {{ trans_choice('services.category_count', $services->count()) }}
         </x-ui.section-heading>
 

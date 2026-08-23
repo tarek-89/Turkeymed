@@ -1,5 +1,5 @@
 <x-layout.app
-    :title="$category->name.' - '.config('site.brand')"
+    :title="$category->translate('name', $language).' - '.config('site.brand')"
     :description="__('home.journal_title')"
     :canonical="$posts->currentPage() > 1 ? $category->blogUrl($language).'?page='.$posts->currentPage() : $category->blogUrl($language)"
 >
@@ -7,12 +7,12 @@
         <x-ui.breadcrumbs
             :items="[
                 ['label' => __('nav.blog'), 'href' => \App\Support\Navigation::blogUrl()],
-                ['label' => $category->name],
+                ['label' => $category->translate('name', $language)],
             ]"
             class="pb-5"
         />
 
-        <x-ui.section-heading :eyebrow="__('posts.blog')" :title="$category->name" level="h1" />
+        <x-ui.section-heading :eyebrow="__('posts.blog')" :title="$category->translate('name', $language)" level="h1" />
 
         @if ($posts->isEmpty())
             <x-ui.card variant="soft" class="mx-auto max-w-xl text-center">
