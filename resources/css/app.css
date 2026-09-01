@@ -259,6 +259,30 @@
         @apply my-6 border-s-4 border-cyan-400 ps-4 text-ink;
     }
 
+    /* Consecutive body images are auto-wrapped in .image-row (see
+       ImageRowFormatter): they sit side by side with equal widths and wrap
+       onto new lines on small screens — no editor layout tools needed. */
+    .post-body .image-row {
+        @apply my-6 flex flex-wrap gap-4;
+    }
+
+    .post-body .image-row img {
+        @apply my-0 h-auto rounded-xl;
+        flex: 1 1 240px;
+        min-width: 0;
+        max-width: 100%;
+    }
+
+    .post-body .image-row a {
+        flex: 1 1 240px;
+        min-width: 0;
+    }
+
+    .post-body .image-row a img {
+        flex: none;
+        width: 100%;
+    }
+
     .post-body table {
         @apply mb-6 w-full border-collapse border border-line text-sm;
     }

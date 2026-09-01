@@ -38,7 +38,7 @@ class PostsTable
 
                 TextColumn::make('category.name')
                     ->label('Category')
-                    ->sortable()
+                    ->state(fn (Post $record): ?string => $record->category?->translate('name', Locale::DEFAULT))
                     ->badge()
                     ->placeholder('Uncategorized')
                     ->toggleable(),
@@ -81,8 +81,13 @@ class PostsTable
             ->filters([
                 SelectFilter::make('service_category_id')
                     ->label('Category')
-                    ->relationship('category', 'name', fn ($query) => $query->orderBy('sort_order'))
-                    ->getOptionLabelFromRecordUsing(fn (ServiceCategory $record): ?string => $record->translate('name', Locale::DEFAULT)),
+                    ->options(fn (): array => ServiceCategory::query()
+                        ->orderBy('sort_order')
+                        ->get()
+                        ->mapWithKeys(fn (ServiceCategory $category): array => [
+                            $category->getKey() => $category->translate('name', Locale::DEFAULT),
+                        ])
+                        ->all()),
 
                 SelectFilter::make('language')
                     ->options(fn (): array => Post::languageOptions()),

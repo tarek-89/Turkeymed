@@ -95,7 +95,7 @@ class PatientResultForm
                             )
                             ->getOptionLabelFromRecordUsing(fn (ServiceCategory $record): ?string => $record->translate('name', Locale::DEFAULT))
                             ->required()
-                            ->searchable(['name'])
+                            ->searchable()
                             ->preload()
                             ->native(false)
                             ->live()

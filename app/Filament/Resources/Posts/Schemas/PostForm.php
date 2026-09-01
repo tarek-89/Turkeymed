@@ -112,7 +112,7 @@ class PostForm
                                 modifyQueryUsing: fn ($query) => $query->orderBy('sort_order'),
                             )
                             ->getOptionLabelFromRecordUsing(fn (ServiceCategory $record): ?string => $record->translate('name', Locale::DEFAULT))
-                            ->searchable(['name'])
+                            ->searchable()
                             ->preload()
                             ->native(false)
                             ->helperText('Used to suggest related services and posts on the site.'),

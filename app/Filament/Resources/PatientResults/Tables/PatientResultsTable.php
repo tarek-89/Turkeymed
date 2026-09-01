@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\PatientResults\Tables;
 
+use App\Models\PatientResult;
 use App\Models\ServiceCategory;
 use App\Support\Locale;
 use Filament\Actions\BulkActionGroup;
@@ -34,7 +35,7 @@ class PatientResultsTable
 
                 TextColumn::make('category.name')
                     ->label('Category')
-                    ->sortable()
+                    ->state(fn (PatientResult $record): ?string => $record->category?->translate('name', Locale::DEFAULT))
                     ->badge(),
 
                 TextColumn::make('service.title')
@@ -65,8 +66,13 @@ class PatientResultsTable
             ->filters([
                 SelectFilter::make('service_category_id')
                     ->label('Category')
-                    ->relationship('category', 'name', fn ($query) => $query->orderBy('sort_order'))
-                    ->getOptionLabelFromRecordUsing(fn (ServiceCategory $record): ?string => $record->translate('name', Locale::DEFAULT)),
+                    ->options(fn (): array => ServiceCategory::query()
+                        ->orderBy('sort_order')
+                        ->get()
+                        ->mapWithKeys(fn (ServiceCategory $category): array => [
+                            $category->getKey() => $category->translate('name', Locale::DEFAULT),
+                        ])
+                        ->all()),
 
                 TernaryFilter::make('is_published')
                     ->label('Published'),
