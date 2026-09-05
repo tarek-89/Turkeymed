@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Concerns\HasTranslatedFields;
+use App\Support\Locale;
 use Database\Factories\ServiceCategoryFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -22,7 +23,35 @@ class ServiceCategory extends Model
     {
         return [
             'name' => 'array',
+            'sort_order' => 'integer',
         ];
+    }
+
+    /**
+     * Move this category one position up (-1) or down (+1) in the header menu,
+     * then renumber all categories 1..n so positions stay unique.
+     */
+    public function moveBy(int $direction): void
+    {
+        $categories = static::query()
+            ->orderBy('sort_order')
+            ->orderByRaw("JSON_UNQUOTE(JSON_EXTRACT(name, '$.\"".Locale::DEFAULT."\"'))")
+            ->get()
+            ->values();
+
+        $index = $categories->search(fn (self $category): bool => $category->is($this));
+        $target = $index + $direction;
+
+        if ($index === false || $target < 0 || $target >= $categories->count()) {
+            return;
+        }
+
+        $reordered = $categories->all();
+        [$reordered[$index], $reordered[$target]] = [$reordered[$target], $reordered[$index]];
+
+        foreach ($reordered as $position => $category) {
+            $category->update(['sort_order' => $position + 1]);
+        }
     }
 
     /** @return HasMany<Service, $this> */

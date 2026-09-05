@@ -25,7 +25,7 @@ class Navigation
                 ->whereNotNull('published_at')
                 ->where('published_at', '<=', now())
                 ->where('language', $locale)
-                ->orderBy('title')])
+                ->ordered()])
             ->orderBy('sort_order')
             ->orderByRaw("JSON_UNQUOTE(JSON_EXTRACT(name, '$.\"".Locale::DEFAULT."\"'))")
             ->get()

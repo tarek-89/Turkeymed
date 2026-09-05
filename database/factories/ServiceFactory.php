@@ -26,6 +26,7 @@ class ServiceFactory extends Factory
         return [
             'service_category_id' => null,
             'translation_group_id' => null,
+            'sort_order' => 0,
             'language' => Post::DEFAULT_LANGUAGE,
             'slug' => Str::slug($title),
             'title' => $title,

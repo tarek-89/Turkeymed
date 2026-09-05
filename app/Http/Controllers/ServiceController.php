@@ -79,7 +79,7 @@ class ServiceController extends Controller
                 fn ($query) => $query->where('service_category_id', $category->id),
                 fn ($query) => $query->whereNull('service_category_id'),
             )
-            ->orderBy('title')
+            ->ordered()
             ->get();
 
         $posts = Post::published()

@@ -18,13 +18,25 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class ServicesTable
 {
     public static function configure(Table $table): Table
     {
         return $table
-            ->defaultSort('title')
+            ->defaultSort(fn (Builder $query): Builder => $query->orderBy('sort_order')->orderBy('title'))
+            ->reorderable('sort_order')
+            ->afterReordering(function (array $order): void {
+                // Drag-reorder is a bulk SQL update (no model events), so mirror
+                // each new position to the row's other-language translations.
+                Service::query()
+                    ->whereIn('id', $order)
+                    ->whereNotNull('translation_group_id')
+                    ->get()
+                    ->each(fn (Service $service) => $service->syncSortOrderToTranslations());
+            })
+            ->description('Order controls the header menu and category page. Filter by a category, then use the ▲ ▼ buttons (or "Reorder" to drag). Changing the order in one language applies to all languages.')
             ->columns([
                 ImageColumn::make('featured_image')
                     ->label('')
@@ -77,6 +89,11 @@ class ServicesTable
                 TextColumn::make('published_at')
                     ->dateTime('M j, Y')
                     ->sortable(),
+
+                TextColumn::make('sort_order')
+                    ->label('Order')
+                    ->sortable()
+                    ->alignCenter(),
             ])
             ->filters([
                 SelectFilter::make('service_category_id')
@@ -102,6 +119,18 @@ class ServicesTable
                     ->label('Elementor-built'),
             ])
             ->recordActions([
+                Action::make('moveUp')
+                    ->label('Move up')
+                    ->icon(Heroicon::OutlinedChevronUp)
+                    ->iconButton()
+                    ->color('gray')
+                    ->action(fn (Service $record) => $record->moveBy(-1)),
+                Action::make('moveDown')
+                    ->label('Move down')
+                    ->icon(Heroicon::OutlinedChevronDown)
+                    ->iconButton()
+                    ->color('gray')
+                    ->action(fn (Service $record) => $record->moveBy(1)),
                 Action::make('view')
                     ->label('View')
                     ->icon(Heroicon::OutlinedArrowTopRightOnSquare)

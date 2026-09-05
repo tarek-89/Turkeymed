@@ -162,6 +162,12 @@ class ServiceForm
                             ->preload()
                             ->native(false),
 
+                        TextInput::make('sort_order')
+                            ->label('Menu order')
+                            ->numeric()
+                            ->default(0)
+                            ->helperText('Lower numbers show first in the header menu and category page. Shared across all languages of this service. Rows can also be drag-reordered in the list.'),
+
                         Select::make('language')
                             ->options(fn (): array => Post::languageOptions())
                             ->default(fn (): string => request()->query('lang', Post::DEFAULT_LANGUAGE))

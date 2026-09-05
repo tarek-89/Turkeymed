@@ -6,6 +6,7 @@ use App\Filament\Resources\ServiceCategories\Pages\ListServiceCategories;
 use App\Models\ServiceCategory;
 use App\Support\Locale;
 use BackedEnum;
+use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\TextInput;
@@ -58,7 +59,8 @@ class ServiceCategoryResource extends Resource
 
             TextInput::make('sort_order')
                 ->numeric()
-                ->default(0),
+                ->default(0)
+                ->helperText('Lower numbers show first in the header menu. Rows can also be drag-reordered in the list.'),
         ]);
     }
 
@@ -66,6 +68,7 @@ class ServiceCategoryResource extends Resource
     {
         return $table
             ->defaultSort('sort_order')
+            ->reorderable('sort_order')
             ->columns([
                 TextColumn::make('name')
                     ->state(fn (ServiceCategory $record): ?string => $record->translate('name', 'en'))
@@ -80,9 +83,23 @@ class ServiceCategoryResource extends Resource
                     ->sortable(),
 
                 TextColumn::make('sort_order')
-                    ->sortable(),
+                    ->label('Order')
+                    ->sortable()
+                    ->alignCenter(),
             ])
             ->recordActions([
+                Action::make('moveUp')
+                    ->label('Move up')
+                    ->icon(Heroicon::OutlinedChevronUp)
+                    ->iconButton()
+                    ->color('gray')
+                    ->action(fn (ServiceCategory $record) => $record->moveBy(-1)),
+                Action::make('moveDown')
+                    ->label('Move down')
+                    ->icon(Heroicon::OutlinedChevronDown)
+                    ->iconButton()
+                    ->color('gray')
+                    ->action(fn (ServiceCategory $record) => $record->moveBy(1)),
                 EditAction::make(),
                 DeleteAction::make(),
             ]);

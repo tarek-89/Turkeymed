@@ -19,11 +19,69 @@ class Service extends Model
 
     protected $guarded = [];
 
+    protected static function booted(): void
+    {
+        // Sort order is set once per treatment, not per language: when a row's
+        // position changes, mirror it to its translations so every locale's
+        // menu and category page share the same order.
+        static::saved(function (self $service): void {
+            if ($service->wasChanged('sort_order')) {
+                $service->syncSortOrderToTranslations();
+            }
+        });
+    }
+
+    /**
+     * Move this service one position up (-1) or down (+1) within its category
+     * and language, then renumber the whole group 1..n so positions stay
+     * unique. Each change is mirrored to the row's other-language translations.
+     */
+    public function moveBy(int $direction): void
+    {
+        $siblings = static::query()
+            ->where('language', $this->language)
+            ->where('service_category_id', $this->service_category_id)
+            ->ordered()
+            ->get()
+            ->values();
+
+        $index = $siblings->search(fn (self $service): bool => $service->is($this));
+        $target = $index + $direction;
+
+        if ($index === false || $target < 0 || $target >= $siblings->count()) {
+            return;
+        }
+
+        $reordered = $siblings->all();
+        [$reordered[$index], $reordered[$target]] = [$reordered[$target], $reordered[$index]];
+
+        foreach ($reordered as $position => $service) {
+            $service->update(['sort_order' => $position + 1]);
+        }
+    }
+
+    /**
+     * Copy this row's sort_order to its sibling translations. Also called after
+     * Filament drag-reordering, which bulk-updates without firing model events.
+     */
+    public function syncSortOrderToTranslations(): void
+    {
+        if ($this->translation_group_id === null) {
+            return;
+        }
+
+        static::query()
+            ->where('translation_group_id', $this->translation_group_id)
+            ->where('id', '!=', $this->id)
+            ->update(['sort_order' => $this->sort_order]);
+    }
+
     /** @return array<string, string> */
     protected function casts(): array
     {
         return [
             'is_elementor' => 'boolean',
+            'sort_order' => 'integer',
             'published_at' => 'datetime',
             'wp_modified_at' => 'datetime',
             'featured_image_meta' => 'array',
@@ -65,6 +123,17 @@ class Service extends Model
     public function scopeLanguage(Builder $query, string $language): Builder
     {
         return $query->where('language', $language);
+    }
+
+    /**
+     * Manual admin order (drag-sorted in Filament), alphabetical as tiebreaker.
+     *
+     * @param  Builder<self>  $query
+     * @return Builder<self>
+     */
+    public function scopeOrdered(Builder $query): Builder
+    {
+        return $query->orderBy('sort_order')->orderBy('title');
     }
 
     /* ---------------- Translations ---------------- */
