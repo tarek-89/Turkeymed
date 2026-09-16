@@ -14,6 +14,11 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // Behind Cloudflare (reverse proxy): trust forwarded headers so the
+        // app sees real visitor IPs and the correct https scheme/host. Lock
+        // the origin firewall to Cloudflare IPs to prevent header spoofing.
+        $middleware->trustProxies(at: '*');
+
         // Global: resolve old-WordPress-URL redirects before routing, so it also
         // catches paths that match no route and 404s.
         $middleware->prepend(HandleRedirects::class);
