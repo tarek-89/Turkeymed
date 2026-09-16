@@ -6,6 +6,6 @@
     <article class="min-w-0">{{ $slot }}</article>
 
     @isset($aside)
-        <aside class="grid gap-5 lg:sticky lg:top-[90px]">{{ $aside }}</aside>
+        <aside class="grid gap-5 lg:sticky lg:top-[106px]">{{ $aside }}</aside>
     @endisset
 </div>

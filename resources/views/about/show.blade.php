@@ -63,10 +63,17 @@
     {{-- Numbers widget --}}
     @if ($stats->isNotEmpty())
         <x-ui.section :tight="true">
-            <div class="grid gap-8 rounded-2xl bg-[linear-gradient(135deg,var(--color-navy-800),var(--color-navy-700)_40%,var(--color-cyan-700))] px-6 py-12 sm:grid-cols-2 lg:grid-cols-4 lg:px-12">
-                @foreach ($stats as $stat)
-                    <x-ui.stat :value="$stat->value" :label="$stat->translate('label')" variant="light" />
-                @endforeach
+            <div class="flex justify-center">
+                <div class="grid w-full max-w-xl grid-cols-2 gap-y-8 rounded-2xl bg-[linear-gradient(135deg,var(--color-navy-800),var(--color-navy-700)_40%,var(--color-cyan-700))] px-6 py-8 shadow-md sm:flex sm:w-auto sm:max-w-none">
+                    @foreach ($stats as $stat)
+                        <x-ui.stat
+                            :value="$stat->value"
+                            :label="$stat->translate('label')"
+                            variant="light"
+                            class="px-8 sm:border-white/20 sm:px-10 sm:[&:not(:first-child)]:border-s"
+                        />
+                    @endforeach
+                </div>
             </div>
         </x-ui.section>
     @endif
