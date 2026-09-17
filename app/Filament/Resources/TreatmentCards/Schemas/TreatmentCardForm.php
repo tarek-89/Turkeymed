@@ -64,7 +64,8 @@ class TreatmentCardForm
                         TextInput::make('url')
                             ->label('Link URL')
                             ->maxLength(500)
-                            ->placeholder('/category/hair-transplant-surgery'),
+                            ->helperText('One link for all languages. Use an internal path like /services/hair-transplant-surgery — it is localised automatically (/ar/services/…). External links (https://…) and anchors are left as-is.')
+                            ->placeholder('/services/hair-transplant-surgery'),
 
                         TextInput::make('sort_order')
                             ->numeric()
