@@ -8,5 +8,8 @@
   "get_directions": "Cómo llegar",
   "call": "Llamar",
   "message_eyebrow": "Envíanos un mensaje",
-  "follow_us": "Síguenos"
+  "follow_us": "Síguenos",
+  "form_title": "Cuéntanos qué estás buscando",
+  "form_text": "Déjanos tus datos y un coordinador de pacientes te responderá lo antes posible.",
+  "reach_us_through": "o contáctanos por"
 }

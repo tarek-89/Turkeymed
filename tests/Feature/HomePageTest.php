@@ -51,6 +51,19 @@ class HomePageTest extends TestCase
         $response->assertSee('Free consultation');
     }
 
+    public function test_hero_form_embed_is_optional(): void
+    {
+        $this->get('/')->assertOk()->assertDontSee('contact-embed-form', false);
+
+        Setting::set('home.hero_form_embed', '<iframe src="https://forms.example.com/hero"></iframe>');
+
+        $this->get('/')
+            ->assertOk()
+            ->assertSee('contact-embed-form', false)
+            ->assertSee('https://forms.example.com/hero', false)
+            ->assertSee('contact-portrait', false);
+    }
+
     public function test_unpublished_components_are_hidden(): void
     {
         TreatmentCard::factory()->unpublished()->create(['title' => ['en' => 'Hidden treatment']]);

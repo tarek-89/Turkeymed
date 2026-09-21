@@ -8,5 +8,8 @@
   "get_directions": "Get directions",
   "call": "Call",
   "message_eyebrow": "Send us a message",
-  "follow_us": "Follow us"
+  "follow_us": "Follow us",
+  "form_title": "Tell us what you're looking for",
+  "form_text": "Leave your details and a patient coordinator will get back to you as soon as possible.",
+  "reach_us_through": "or reach us through"
 }

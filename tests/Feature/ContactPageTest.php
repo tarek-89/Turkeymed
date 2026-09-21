@@ -79,6 +79,32 @@ class ContactPageTest extends TestCase
         $response->assertSee('https://forms.example.com/abc', false);
     }
 
+    public function test_form_portrait_is_rendered_beside_the_form_when_set(): void
+    {
+        $this->seedHero();
+        config(['filesystems.disks.r2.url' => 'https://cdn.example.com']);
+        Setting::set('contact.form_embed', '<iframe src="https://forms.example.com/abc" title="enquiry"></iframe>');
+        Setting::set('contact.form_image', 'contact/coordinator.jpg');
+
+        $response = $this->get('/contact');
+
+        $response->assertOk();
+        $response->assertSee('https://cdn.example.com/contact/coordinator.jpg', false);
+        $response->assertSee('contact-portrait', false);
+    }
+
+    public function test_form_portrait_falls_back_to_the_bundled_image(): void
+    {
+        $this->seedHero();
+        Setting::set('contact.form_embed', '<iframe src="https://forms.example.com/abc" title="enquiry"></iframe>');
+
+        $response = $this->get('/contact');
+
+        $response->assertOk();
+        $response->assertSee('images/contact-portrait.webp', false);
+        $response->assertSee('contact-portrait', false);
+    }
+
     public function test_map_embed_is_rendered_when_set(): void
     {
         $this->seedHero();

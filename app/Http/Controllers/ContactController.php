@@ -43,6 +43,7 @@ class ContactController extends Controller
             'methodEmailDesc' => Setting::translated('contact.method_email_desc', $language),
             'hours' => Setting::translated('contact.hours', $language),
             'formEmbed' => Setting::get('contact.form_embed'),
+            'formImage' => Setting::contactFormImageUrl(),
             'mapEmbed' => Setting::get('contact.map_embed'),
             'officeGroups' => $offices,
             'socialLinks' => SocialLink::published()->orderBy('sort_order')->get(),

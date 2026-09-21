@@ -50,41 +50,72 @@
         @endif
     </x-ui.section>
 
-    {{-- Message form embed + office hours sidebar --}}
+    {{-- Message form (split card: form + portrait) and office hours --}}
     @if ($formEmbed || filled($hours))
         <x-ui.section :tight="true">
-            <div class="grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_340px]">
+            <div @class(['grid items-start gap-8', 'lg:grid-cols-[minmax(0,1fr)_340px]' => ! $formImage])>
                 @if ($formEmbed)
-                    <x-ui.card>
-                        <x-ui.eyebrow as="h2" class="mb-4 block">{{ __('contact.message_eyebrow') }}</x-ui.eyebrow>
-                        <div class="contact-embed">{!! $formEmbed !!}</div>
-                    </x-ui.card>
+                    <x-contact.form-panel :embed="$formEmbed" :image="$formImage" />
                 @endif
 
                 @if (filled($hours))
-                    <x-ui.card>
-                        <x-ui.eyebrow as="h3" class="mb-3 block">{{ __('contact.method_call') }}</x-ui.eyebrow>
-                        <dl class="divide-y divide-line text-sm">
-                            @foreach (preg_split('/\r?\n/', trim((string) $hours)) as $line)
-                                @php
-                                    [$label, $value] = array_pad(array_map('trim', explode('|', $line, 2)), 2, null);
-                                @endphp
-                                @if ($value !== null)
+                    @php
+                        $hourRows = [];
+                        $hourNotes = [];
+                        foreach (preg_split('/\r?\n/', trim((string) $hours)) as $line) {
+                            [$label, $value] = array_pad(array_map('trim', explode('|', $line, 2)), 2, null);
+                            if ($value !== null) {
+                                $hourRows[] = [$label, $value];
+                            } elseif ($label !== '') {
+                                $hourNotes[] = $label;
+                            }
+                        }
+                    @endphp
+
+                    @if ($formImage)
+                        {{-- Full-width: one compact strip (days side by side) instead of stretched rows. --}}
+                        <x-ui.card class="lg:flex lg:items-center lg:gap-8 lg:py-5">
+                            <x-ui.eyebrow as="h3" class="mb-3 block lg:mb-0 lg:flex-none">{{ __('contact.method_call') }}</x-ui.eyebrow>
+
+                            <dl class="divide-y divide-line text-sm lg:flex lg:flex-1 lg:divide-x lg:divide-y-0">
+                                @foreach ($hourRows as [$label, $value])
+                                    <div class="flex items-center justify-between gap-3 py-2.5 lg:flex-col lg:items-start lg:justify-center lg:gap-0.5 lg:px-6 lg:py-0 lg:first:ps-0">
+                                        <dt class="text-muted">{{ $label }}</dt>
+                                        <dd class="font-bold text-ink">{{ $value }}</dd>
+                                    </div>
+                                @endforeach
+                            </dl>
+
+                            @foreach ($hourNotes as $note)
+                                <p class="flex items-center gap-2 py-2.5 text-sm text-muted lg:flex-none lg:py-0">
+                                    <span class="h-2 w-2 flex-none rounded-full bg-success" aria-hidden="true"></span>
+                                    {{ $note }}
+                                </p>
+                            @endforeach
+
+                            <x-ui.whatsapp-button variant="accent" class="mt-4 max-lg:w-full lg:mt-0 lg:flex-none" />
+                        </x-ui.card>
+                    @else
+                        <x-ui.card>
+                            <x-ui.eyebrow as="h3" class="mb-3 block">{{ __('contact.method_call') }}</x-ui.eyebrow>
+                            <dl class="divide-y divide-line text-sm">
+                                @foreach ($hourRows as [$label, $value])
                                     <div class="flex items-center justify-between gap-3 py-2.5">
                                         <dt class="text-muted">{{ $label }}</dt>
                                         <dd class="font-bold text-ink">{{ $value }}</dd>
                                     </div>
-                                @elseif ($label !== '')
+                                @endforeach
+                                @foreach ($hourNotes as $note)
                                     <p class="flex items-center gap-2 py-2.5 text-muted">
                                         <span class="h-2 w-2 flex-none rounded-full bg-success" aria-hidden="true"></span>
-                                        {{ $label }}
+                                        {{ $note }}
                                     </p>
-                                @endif
-                            @endforeach
-                        </dl>
+                                @endforeach
+                            </dl>
 
-                        <x-ui.whatsapp-button variant="accent" :block="true" class="mt-5" />
-                    </x-ui.card>
+                            <x-ui.whatsapp-button variant="accent" :block="true" class="mt-5" />
+                        </x-ui.card>
+                    @endif
                 @endif
             </div>
         </x-ui.section>

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\Locale;
 use Illuminate\Database\Eloquent\Model;
 
 class Setting extends Model
@@ -45,7 +46,20 @@ class Setting extends Model
         $locale ??= app()->getLocale();
 
         return $values[$locale]
-            ?? $values[\App\Support\Locale::DEFAULT]
+            ?? $values[Locale::DEFAULT]
             ?? (array_values(array_filter($values))[0] ?? null);
+    }
+
+    /**
+     * Portrait shown beside the message form (contact page and homepage):
+     * an admin upload on R2 wins, otherwise the bundled default image.
+     */
+    public static function contactFormImageUrl(): string
+    {
+        $path = static::get('contact.form_image');
+
+        return filled($path)
+            ? rtrim((string) config('filesystems.disks.r2.url'), '/').'/'.ltrim((string) $path, '/')
+            : asset('images/contact-portrait.webp');
     }
 }

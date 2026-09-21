@@ -46,6 +46,7 @@ class ManageHomePage extends Page
             'hero_images' => Setting::get('home.hero_images', []),
             'hero_stat_value' => Setting::get('home.hero_stat_value'),
             'hero_stat_label' => Setting::get('home.hero_stat_label', []),
+            'hero_form_embed' => Setting::get('home.hero_form_embed'),
             'cta_title' => Setting::get('home.cta_title', []),
             'cta_text' => Setting::get('home.cta_text', []),
         ]);
@@ -106,6 +107,15 @@ class ManageHomePage extends Page
                             ->helperText('One or more photos. With several, the hero shows a slider. Drag to reorder.'),
                     ]),
 
+                Section::make('Hero form (embed)')
+                    ->description('Optional. Paste a form embed code (e.g. an iframe) to show it in the hero, beside the image. Leave empty to hide it.')
+                    ->components([
+                        Textarea::make('hero_form_embed')
+                            ->hiddenLabel()
+                            ->rows(6)
+                            ->extraAttributes(['class' => 'font-mono text-xs']),
+                    ]),
+
                 Section::make('Bottom call to action')
                     ->components([
                         Tabs::make('CTA translations')->tabs(
@@ -132,7 +142,7 @@ class ManageHomePage extends Page
 
         foreach ([
             'hero_badge', 'hero_title', 'hero_title_accent', 'hero_lead',
-            'hero_stat_value', 'hero_stat_label', 'cta_title', 'cta_text',
+            'hero_stat_value', 'hero_stat_label', 'hero_form_embed', 'cta_title', 'cta_text',
         ] as $key) {
             Setting::set('home.'.$key, $state[$key] ?? null);
         }

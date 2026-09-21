@@ -277,6 +277,39 @@ function initSite() {
     }
 }
 
+/* ---- Form embeds: grow the iframe to its content ----
+   The form lives on another origin, so its height can't be measured from
+   here. Most form providers announce their height via postMessage; when the
+   message comes from one of our form iframes, apply it so no inner scrollbar
+   appears. Falls back to the CSS height when the provider sends nothing. */
+function readEmbedHeight(data) {
+    if (typeof data === 'string') {
+        // iframe-resizer protocol: "[iFrameSizer]<id>:<height>:<width>:<type>"
+        const sizer = data.match(/^\[iFrameSizer\][^:]*:(\d+(?:\.\d+)?)/);
+        if (sizer) return parseFloat(sizer[1]);
+        try {
+            data = JSON.parse(data);
+        } catch {
+            return null;
+        }
+    }
+    if (!data || typeof data !== 'object') return null;
+    const candidate = data.height ?? data.frameHeight ?? data.iframeHeight ?? data.payload?.height ?? data.data?.height;
+    const height = parseFloat(candidate);
+    return Number.isFinite(height) ? height : null;
+}
+
+window.addEventListener('message', (event) => {
+    const frame = [...document.querySelectorAll('.contact-embed-form iframe')].find(
+        (iframe) => iframe.contentWindow === event.source,
+    );
+    if (!frame) return;
+    const height = readEmbedHeight(event.data);
+    if (height && height >= 200 && height <= 3000) {
+        frame.style.setProperty('height', `${Math.ceil(height)}px`, 'important');
+    }
+});
+
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initSite);
 } else {

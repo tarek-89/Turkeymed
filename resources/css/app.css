@@ -203,6 +203,20 @@
         display: block;
     }
 
+    /* Contact form embed: drop the generic min-height and the embed's own
+       height attribute so the frame hugs the form instead of leaving a tall
+       empty band under it. Tune --contact-form-height (default 580px; app.js overrides it when the provider reports its real height) if the form changes. */
+    .contact-embed-form iframe {
+        height: var(--contact-form-height, 580px) !important;
+        min-height: 0;
+        background: transparent;
+    }
+
+    /* Contact form portrait: soft curve on the inline-start edge (mirrors in RTL). */
+    .contact-portrait {
+        border-start-start-radius: 45% 100%;
+    }
+
     /* Signature navy→cyan gradient rendered as text fill (404 numerals, decorative display text). */
     .text-gradient {
         background: linear-gradient(135deg, var(--color-navy-700), var(--color-cyan-400));

@@ -23,7 +23,11 @@
 
     {{-- HERO --}}
     <x-ui.section :tight="true">
-        <div class="grid gap-8 overflow-hidden rounded-2xl bg-[linear-gradient(135deg,var(--color-navy-800),var(--color-navy-700)_45%,var(--color-cyan-700))] p-[clamp(28px,5vw,56px)] text-white lg:grid-cols-2 lg:items-center">
+        {{-- With a form embed the hero becomes one split card: gradient on the inline-start side and a
+             surface-coloured form panel on the other. The provider's iframe background matches the surface
+             token, so its white card reads as native and the shared frame ties both halves together. --}}
+        <div @class(['overflow-hidden rounded-2xl border border-line bg-surface shadow-lg xl:grid xl:grid-cols-[minmax(0,1fr)_420px]' => filled($heroFormEmbed ?? null)])>
+        <div @class(['rounded-2xl' => blank($heroFormEmbed ?? null), 'grid gap-8 overflow-hidden bg-[linear-gradient(135deg,var(--color-navy-800),var(--color-navy-700)_45%,var(--color-cyan-700))] p-[clamp(28px,5vw,56px)] text-white lg:grid-cols-2 lg:items-center'])>
             <div>
                 @if ($heroBadge)
                     <span class="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-sm font-semibold">
@@ -80,6 +84,15 @@
                     </div>
                 @endif
             </div>
+
+        </div>
+
+            @if (filled($heroFormEmbed ?? null))
+                {{-- Optional admin-pasted form embed (Filament → Pages → Homepage). --}}
+                <div class="flex items-center px-2 py-6 xl:px-3">
+                    <div class="contact-embed contact-embed-form mx-auto w-full max-w-[460px]">{!! $heroFormEmbed !!}</div>
+                </div>
+            @endif
         </div>
     </x-ui.section>
 
@@ -224,6 +237,13 @@
                     @endforeach
                 </div>
             @endif
+        </x-ui.section>
+    @endif
+
+    {{-- MESSAGE FORM (same panel as the contact page; reuses the homepage embed) --}}
+    @if (filled($heroFormEmbed ?? null))
+        <x-ui.section :tight="true">
+            <x-contact.form-panel :embed="$heroFormEmbed" :image="$formImage ?? null" />
         </x-ui.section>
     @endif
 

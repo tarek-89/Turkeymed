@@ -8,5 +8,8 @@
   "get_directions": "Itinéraire",
   "call": "Appeler",
   "message_eyebrow": "Envoyez-nous un message",
-  "follow_us": "Suivez-nous"
+  "follow_us": "Suivez-nous",
+  "form_title": "Dites-nous ce que vous recherchez",
+  "form_text": "Laissez vos coordonnées et un coordinateur patients vous répondra dès que possible.",
+  "reach_us_through": "ou contactez-nous par"
 }

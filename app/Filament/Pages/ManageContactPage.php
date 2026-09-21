@@ -5,6 +5,7 @@ namespace App\Filament\Pages;
 use App\Models\Setting;
 use App\Support\Locale;
 use BackedEnum;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
@@ -47,6 +48,7 @@ class ManageContactPage extends Page
             'method_email_desc' => Setting::get('contact.method_email_desc', []),
             'hours' => Setting::get('contact.hours', []),
             'form_embed' => Setting::get('contact.form_embed'),
+            'form_image' => Setting::get('contact.form_image'),
             'map_embed' => Setting::get('contact.map_embed'),
         ]);
     }
@@ -124,6 +126,15 @@ class ManageContactPage extends Page
                             ->hiddenLabel()
                             ->rows(6)
                             ->extraAttributes(['class' => 'font-mono text-xs']),
+
+                        FileUpload::make('form_image')
+                            ->label('Portrait beside the form')
+                            ->image()
+                            ->disk('r2')
+                            ->directory('contact')
+                            ->visibility('private')
+                            ->maxSize(4096)
+                            ->helperText('Optional. Shown to the right of the form on desktop (hidden on mobile). A portrait-orientation photo (about 4:5, at least 1000×1250) with the face in the upper half works best. Leave empty to use the default bundled portrait.'),
                     ]),
 
                 Section::make('Map (embed)')
@@ -163,7 +174,7 @@ class ManageContactPage extends Page
         foreach ([
             'hero_eyebrow', 'hero_title', 'hero_text',
             'method_whatsapp_desc', 'method_phone_desc', 'method_email_desc',
-            'hours', 'form_embed', 'map_embed',
+            'hours', 'form_embed', 'form_image', 'map_embed',
         ] as $key) {
             Setting::set('contact.'.$key, $state[$key] ?? null);
         }

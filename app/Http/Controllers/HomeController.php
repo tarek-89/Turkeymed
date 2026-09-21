@@ -62,6 +62,8 @@ class HomeController extends Controller
             'heroImageSrcset' => $heroImageSrcset,
             'heroStatValue' => Setting::get('home.hero_stat_value'),
             'heroStatLabel' => Setting::translated('home.hero_stat_label', $language),
+            'heroFormEmbed' => Setting::get('home.hero_form_embed'),
+            'formImage' => Setting::contactFormImageUrl(),
 
             // Bottom CTA
             'ctaTitle' => Setting::translated('home.cta_title', $language),
