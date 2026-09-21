@@ -59,7 +59,7 @@ class SecurityHeaders
             "object-src 'none'",
             "base-uri 'self'",
             "frame-ancestors 'self'",
-            "frame-src 'self' https://www.youtube-nocookie.com https://www.youtube.com https://www.instagram.com https://www.google.com https://maps.google.com",
+            "frame-src 'self' https://www.youtube-nocookie.com https://www.youtube.com https://www.instagram.com https://www.google.com https://maps.google.com https://*.milevion.com",
             'upgrade-insecure-requests',
         ]);
         $response->headers->set('Content-Security-Policy', $csp);
