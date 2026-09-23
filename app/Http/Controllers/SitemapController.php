@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CostPage;
 use App\Models\Post;
 use App\Models\Service;
 use App\Models\ServiceCategory;
@@ -22,6 +23,7 @@ class SitemapController extends Controller
             $this->contentEntries(Post::published()->with('category')->get()),
             $this->contentEntries(Service::published()->with('category')->get()),
             $this->categoryEntries(),
+            $this->costPageEntries(),
         );
 
         return response()
@@ -115,6 +117,30 @@ class SitemapController extends Controller
                     'loc' => $loc,
                     'lastmod' => $category->updated_at?->toAtomString(),
                     'alternates' => [],
+                ];
+            }
+        }
+
+        return $entries;
+    }
+
+    /**
+     * Published pricing pages: one entry per translated locale, cross-linked.
+     *
+     * @return list<array{loc: string, lastmod: ?string, alternates: array<string, string>}>
+     */
+    private function costPageEntries(): array
+    {
+        $entries = [];
+
+        foreach (CostPage::listed()->get() as $page) {
+            $alternates = $page->alternates();
+
+            foreach ($alternates as $loc) {
+                $entries[] = [
+                    'loc' => $loc,
+                    'lastmod' => $page->updated_at?->toAtomString(),
+                    'alternates' => count($alternates) > 1 ? $alternates : [],
                 ];
             }
         }

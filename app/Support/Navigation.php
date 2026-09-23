@@ -2,6 +2,7 @@
 
 namespace App\Support;
 
+use App\Models\CostPage;
 use App\Models\ServiceCategory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
@@ -144,9 +145,30 @@ class Navigation
     {
         return [
             ['label' => __('footer.links.about_us'), 'url' => self::aboutUrl()],
+            ...self::pricingLinks(),
             ['label' => __('footer.links.blog'), 'url' => self::blogUrl()],
             ['label' => __('footer.links.contact'), 'url' => self::contactUrl()],
         ];
+    }
+
+    /**
+     * Published pricing pages ("Hair transplant cost in Turkey"), for the
+     * footer, in the current locale.
+     *
+     * @return list<array{label: string, url: string}>
+     */
+    public static function pricingLinks(): array
+    {
+        $locale = app()->getLocale();
+
+        return CostPage::listed()
+            ->orderBy('id')
+            ->get()
+            ->map(fn (CostPage $page): array => [
+                'label' => (string) $page->translate('title', $locale),
+                'url' => $page->url($locale),
+            ])
+            ->all();
     }
 
     /**

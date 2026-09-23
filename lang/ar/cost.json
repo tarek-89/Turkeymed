@@ -1,0 +1,52 @@
+{
+  "calculator": {
+    "step_zones": "1 · اختر المناطق",
+    "step_estimate": "2 · تقديرك",
+    "presets_label": "اختيار سريع (نوروود):",
+    "head_aria": "مناطق فروة الرأس — اضغط للاختيار",
+    "grafts": "بصيلة",
+    "hairs": "شعرة تقريباً",
+    "hairs_approx": "≈ :count",
+    "sessions": "جلسة",
+    "one_session": "1",
+    "two_sessions": "غالباً 2",
+    "time": "مدة العملية",
+    "package": "باقة شاملة",
+    "from": "ابتداءً من :price",
+    "select_zone": "اختر منطقة واحدة على الأقل للبدء",
+    "range": "النطاق المعتاد :min – :max بصيلة · :zones",
+    "zone": "منطقة واحدة",
+    "zones": ":count مناطق",
+    "zone_count": "{0}لا مناطق|{1}منطقة واحدة|{2}منطقتان|[3,*]:count مناطق",
+    "mobile_grafts": "≈ :count بصيلة",
+    "whatsapp": "أرسل هذا التقدير عبر واتساب",
+    "whatsapp_default": "مرحباً TurkeyMed، تقديري من حاسبة البصيلات هو حوالي {grafts} بصيلة ({zones}). هل يمكنني الحصول على عرض سعر؟",
+    "reset": "إعادة التحديد"
+  },
+  "compare": {
+    "tabs_aria": "قارن مع دولة",
+    "turkey_label": "تركيا · TurkeyMed",
+    "save_label": "توفّر عادةً",
+    "save_text": "مقارنةً بـ{country} — حوالي {amount} على العملية نفسها، شاملةً السفر والإقامة."
+  },
+  "packages": {
+    "techniques_aria": "التقنية",
+    "differences": "إظهار الفروقات فقط",
+    "popular": "الأكثر طلباً",
+    "price_suffix": "شامل كل شيء",
+    "included": "مشمول:",
+    "not_included": "غير مشمول:",
+    "payment_label": "نقبل الدفع عبر"
+  },
+  "versus": {
+    "criteria": "المعيار",
+    "abroad": "في الخارج"
+  },
+  "timeline": {
+    "day0": "اليوم 0",
+    "month_short": "ش",
+    "visible": "ظاهر",
+    "chart_aria": "منحنى النمو: :summary",
+    "summary_item": "نحو :percent% من النتيجة ظاهرة :when"
+  }
+}

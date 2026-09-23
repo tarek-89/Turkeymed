@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CostPage;
 use App\Models\Service;
 use App\Models\ServiceCategory;
 use App\Models\Setting;
@@ -87,6 +88,24 @@ class LlmsController extends Controller
                     $category->serviceUrl($code),
                     $name,
                     'Treatments in the '.$name.' category.',
+                );
+            }
+        }
+
+        // Pricing pages (e.g. hair transplant cost), where translated.
+        $pricingPages = CostPage::listed()
+            ->get()
+            ->filter(fn (CostPage $page): bool => array_key_exists($code, $page->alternates()));
+
+        if ($pricingPages->isNotEmpty()) {
+            $lines[] = '';
+
+            foreach ($pricingPages as $page) {
+                $title = self::clean((string) $page->translate('title', $code));
+                $lines[] = $this->link(
+                    $page->url($code),
+                    $title,
+                    self::clean($page->metaDescription($code)) ?: $title,
                 );
             }
         }

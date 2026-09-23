@@ -2,6 +2,7 @@
 
 namespace App\Support\Seo;
 
+use App\Models\CostPage;
 use App\Models\Office;
 use App\Models\Post;
 use App\Models\Service;
@@ -180,6 +181,57 @@ class SchemaBuilder
             // lastReviewed tracks the last update to this page.
             'lastReviewed' => $service->updated_at?->toIso8601String(),
             'about' => self::procedure($service),
+            'publisher' => ['@id' => url('/').'#organization'],
+        ], static fn ($value): bool => $value !== null && $value !== '' && $value !== []);
+    }
+
+    /**
+     * Structured data for a pricing page: a MedicalWebPage about the
+     * treatment, whose main entity is the priced service with an
+     * AggregateOffer built from the page's price range.
+     *
+     * @return array<string, mixed>
+     */
+    public static function costPage(CostPage $page, ?string $locale = null): array
+    {
+        $locale ??= app()->getLocale();
+        $range = $page->priceRange();
+        $title = (string) $page->translate('title', $locale);
+        $categoryName = $page->category?->translate('name', $locale);
+
+        $offers = $range['min'] !== null && $range['max'] !== null
+            ? array_filter([
+                '@type' => 'AggregateOffer',
+                'priceCurrency' => $page->currency,
+                'lowPrice' => $range['min'],
+                'highPrice' => $range['max'],
+                'offerCount' => count($page->publishedPackagePrices()) ?: null,
+                'availability' => 'https://schema.org/InStock',
+            ])
+            : null;
+
+        return array_filter([
+            '@context' => 'https://schema.org',
+            '@type' => 'MedicalWebPage',
+            'name' => $title,
+            'inLanguage' => $locale,
+            'url' => $page->url($locale),
+            'description' => $page->metaDescription($locale),
+            'image' => $page->ogImageUrl(),
+            'dateModified' => $page->updated_at?->toIso8601String(),
+            'lastReviewed' => $page->updated_at?->toIso8601String(),
+            'about' => array_filter([
+                '@type' => 'MedicalProcedure',
+                'name' => $categoryName ?: $title,
+            ]),
+            'mainEntity' => array_filter([
+                '@type' => 'Service',
+                'name' => $title,
+                'serviceType' => $categoryName,
+                'provider' => ['@id' => url('/').'#organization'],
+                'areaServed' => ['@type' => 'Country', 'name' => 'Turkey'],
+                'offers' => $offers,
+            ]),
             'publisher' => ['@id' => url('/').'#organization'],
         ], static fn ($value): bool => $value !== null && $value !== '' && $value !== []);
     }

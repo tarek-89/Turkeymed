@@ -1,0 +1,52 @@
+{
+  "calculator": {
+    "step_zones": "1 · Select your zones",
+    "step_estimate": "2 · Your estimate",
+    "presets_label": "Quick pick (Norwood):",
+    "head_aria": "Scalp zones — tap to select",
+    "grafts": "grafts",
+    "hairs": "approx. hairs",
+    "hairs_approx": "≈ :count",
+    "sessions": "session(s)",
+    "one_session": "1",
+    "two_sessions": "Likely 2",
+    "time": "operation time",
+    "package": "all-inclusive package",
+    "from": "from :price",
+    "select_zone": "Select at least one zone to begin",
+    "range": "Typical range :min – :max grafts · :zones",
+    "zone": ":count zone",
+    "zones": ":count zones",
+    "zone_count": "{0}No zones|{1}:count zone|[2,*]:count zones",
+    "mobile_grafts": "≈ :count grafts",
+    "whatsapp": "Send this estimate on WhatsApp",
+    "whatsapp_default": "Hi TurkeyMed, my graft calculator estimate is ~{grafts} grafts ({zones}). Can I get a quote?",
+    "reset": "Reset selection"
+  },
+  "compare": {
+    "tabs_aria": "Compare with a country",
+    "turkey_label": "Turkey · TurkeyMed",
+    "save_label": "You typically save",
+    "save_text": "compared with {country} — about {amount} on the same operation, with travel and stay already counted."
+  },
+  "packages": {
+    "techniques_aria": "Technique",
+    "differences": "Show differences only",
+    "popular": "Most popular",
+    "price_suffix": "all-inclusive",
+    "included": "Included:",
+    "not_included": "Not included:",
+    "payment_label": "We accept"
+  },
+  "versus": {
+    "criteria": "Criteria",
+    "abroad": "Abroad"
+  },
+  "timeline": {
+    "day0": "Day 0",
+    "month_short": "m",
+    "visible": "visible",
+    "chart_aria": "Growth curve: :summary",
+    "summary_item": "about :percent% visible result :when"
+  }
+}

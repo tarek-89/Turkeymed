@@ -1,0 +1,52 @@
+{
+  "calculator": {
+    "step_zones": "1 · Choisissez vos zones",
+    "step_estimate": "2 · Votre estimation",
+    "presets_label": "Choix rapide (Norwood) :",
+    "head_aria": "Zones du cuir chevelu — touchez pour sélectionner",
+    "grafts": "greffons",
+    "hairs": "cheveux env.",
+    "hairs_approx": "≈ :count",
+    "sessions": "séance(s)",
+    "one_session": "1",
+    "two_sessions": "Probablement 2",
+    "time": "durée de l'opération",
+    "package": "forfait tout compris",
+    "from": "à partir de :price",
+    "select_zone": "Sélectionnez au moins une zone pour commencer",
+    "range": "Fourchette typique :min – :max greffons · :zones",
+    "zone": ":count zone",
+    "zones": ":count zones",
+    "zone_count": "{0}Aucune zone|{1}:count zone|[2,*]:count zones",
+    "mobile_grafts": "≈ :count greffons",
+    "whatsapp": "Envoyer cette estimation sur WhatsApp",
+    "whatsapp_default": "Bonjour TurkeyMed, mon estimation est d'environ {grafts} greffons ({zones}). Puis-je avoir un devis ?",
+    "reset": "Réinitialiser la sélection"
+  },
+  "compare": {
+    "tabs_aria": "Comparer avec un pays",
+    "turkey_label": "Turquie · TurkeyMed",
+    "save_label": "Vous économisez en général",
+    "save_text": "par rapport à {country} — environ {amount} pour la même opération, voyage et séjour compris."
+  },
+  "packages": {
+    "techniques_aria": "Technique",
+    "differences": "Afficher uniquement les différences",
+    "popular": "Le plus choisi",
+    "price_suffix": "tout compris",
+    "included": "Inclus :",
+    "not_included": "Non inclus :",
+    "payment_label": "Nous acceptons"
+  },
+  "versus": {
+    "criteria": "Critère",
+    "abroad": "À l'étranger"
+  },
+  "timeline": {
+    "day0": "Jour 0",
+    "month_short": "m",
+    "visible": "visible",
+    "chart_aria": "Courbe de croissance : :summary",
+    "summary_item": "environ :percent % de résultat visible :when"
+  }
+}

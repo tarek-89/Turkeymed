@@ -1,0 +1,52 @@
+{
+  "calculator": {
+    "step_zones": "1 · Elige tus zonas",
+    "step_estimate": "2 · Tu estimación",
+    "presets_label": "Selección rápida (Norwood):",
+    "head_aria": "Zonas del cuero cabelludo: toca para seleccionar",
+    "grafts": "injertos",
+    "hairs": "cabellos aprox.",
+    "hairs_approx": "≈ :count",
+    "sessions": "sesión(es)",
+    "one_session": "1",
+    "two_sessions": "Probablemente 2",
+    "time": "duración de la operación",
+    "package": "paquete todo incluido",
+    "from": "desde :price",
+    "select_zone": "Selecciona al menos una zona para empezar",
+    "range": "Rango habitual :min – :max injertos · :zones",
+    "zone": ":count zona",
+    "zones": ":count zonas",
+    "zone_count": "{0}Sin zonas|{1}:count zona|[2,*]:count zonas",
+    "mobile_grafts": "≈ :count injertos",
+    "whatsapp": "Enviar esta estimación por WhatsApp",
+    "whatsapp_default": "Hola TurkeyMed, mi estimación es de unos {grafts} injertos ({zones}). ¿Puedo recibir un presupuesto?",
+    "reset": "Restablecer selección"
+  },
+  "compare": {
+    "tabs_aria": "Comparar con un país",
+    "turkey_label": "Turquía · TurkeyMed",
+    "save_label": "Normalmente ahorras",
+    "save_text": "en comparación con {country}: unos {amount} en la misma operación, con viaje y estancia incluidos."
+  },
+  "packages": {
+    "techniques_aria": "Técnica",
+    "differences": "Mostrar solo las diferencias",
+    "popular": "Más popular",
+    "price_suffix": "todo incluido",
+    "included": "Incluido:",
+    "not_included": "No incluido:",
+    "payment_label": "Aceptamos"
+  },
+  "versus": {
+    "criteria": "Criterio",
+    "abroad": "En el extranjero"
+  },
+  "timeline": {
+    "day0": "Día 0",
+    "month_short": "m",
+    "visible": "visible",
+    "chart_aria": "Curva de crecimiento: :summary",
+    "summary_item": "alrededor del :percent % de resultado visible :when"
+  }
+}

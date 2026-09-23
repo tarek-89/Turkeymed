@@ -13,12 +13,44 @@ import '@fontsource/jetbrains-mono/400.css';
 import '@fontsource/jetbrains-mono/500.css';
 
 import './bootstrap';
+import { initGraftCalculator } from './cost/graft-calculator';
+import { initCountryCompare } from './cost/country-compare';
+import { initPackages } from './cost/packages';
+import { initRecoveryTimeline } from './cost/recovery-timeline';
 
 /* ============================================================
    TurkeyMed — Aurora interactions
    Vanilla JS, progressive enhancement, keyboard + SR friendly.
    ============================================================ */
 function initSite() {
+    /* ---- Pricing page: graft calculator ---- */
+    try {
+        initGraftCalculator();
+    } catch (error) {
+        console.error('[calculator]', error);
+    }
+
+    /* ---- Pricing page: worldwide comparison ---- */
+    try {
+        initCountryCompare();
+    } catch (error) {
+        console.error('[compare]', error);
+    }
+
+    /* ---- Pricing page: packages ---- */
+    try {
+        initPackages();
+    } catch (error) {
+        console.error('[packages]', error);
+    }
+
+    /* ---- Pricing page: recovery timeline ---- */
+    try {
+        initRecoveryTimeline();
+    } catch (error) {
+        console.error('[timeline]', error);
+    }
+
     /* ---- Mobile nav drawer ---- */
     const toggle = document.querySelector('[data-nav-toggle]');
     const drawer = document.querySelector('[data-drawer]');

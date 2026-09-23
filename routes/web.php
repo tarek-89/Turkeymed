@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AboutController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\CostPageController;
 use App\Http\Controllers\FeedController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LlmsController;
@@ -65,6 +66,9 @@ Route::get('/services/{categorySlug}/{slug}', [ServiceController::class, 'show']
 Route::get('/about', [AboutController::class, 'show'])->name('about');
 Route::get('/contact', [ContactController::class, 'show'])->name('contact');
 
+// Pricing pages (admin-built, e.g. /pricing/hair-transplant-cost-turkey)
+Route::get('/pricing/{slug}', [CostPageController::class, 'show'])->name('cost.show');
+
 /*
 |--------------------------------------------------------------------------
 | Localized (/{locale}/...) — most specific first, bare /{locale} last
@@ -84,6 +88,9 @@ Route::get('/{locale}/services/{categorySlug}/{slug}', [ServiceController::class
 // Static pages
 Route::get('/{locale}/about', [AboutController::class, 'showLocalized'])->name('about.localized');
 Route::get('/{locale}/contact', [ContactController::class, 'showLocalized'])->name('contact.localized');
+
+// Pricing pages
+Route::get('/{locale}/pricing/{slug}', [CostPageController::class, 'showLocalized'])->name('cost.show.localized');
 
 // Localized homepage (keep last — bare 2-letter segment)
 Route::get('/{locale}', [HomeController::class, 'indexLocalized'])->name('home.localized');
