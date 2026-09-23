@@ -130,27 +130,36 @@
                 align="center"
             />
 
-            <div class="space-y-10">
-                @foreach ($officeGroups as $offices)
-                    <div>
-                        <div class="mb-5 flex flex-wrap items-center gap-3">
-                            <h3 class="text-xl font-bold text-ink">{{ $offices->first()->translate('country') }}</h3>
-                            <x-ui.badge variant="outline">{{ trans_choice('contact.office_count', $offices->count(), ['count' => $offices->count()]) }}</x-ui.badge>
-                        </div>
+            <div @class(['grid gap-8', 'lg:grid-cols-2' => $mapEmbed])>
+                <div class="space-y-10">
+                    @foreach ($officeGroups as $offices)
+                        <div>
+                            <div class="mb-5 flex flex-wrap items-center gap-3">
+                                <h3 class="text-xl font-bold text-ink">{{ $offices->first()->translate('country') }}</h3>
+                                <x-ui.badge variant="outline">{{ trans_choice('contact.office_count', $offices->count(), ['count' => $offices->count()]) }}</x-ui.badge>
+                            </div>
 
-                        <div class="grid gap-6 md:grid-cols-2">
-                            @foreach ($offices as $office)
-                                <x-contact.office-card :office="$office" />
-                            @endforeach
+                            <div @class(['grid gap-6', 'md:grid-cols-2' => ! $mapEmbed])>
+                                @foreach ($offices as $office)
+                                    <x-contact.office-card :office="$office" />
+                                @endforeach
+                            </div>
                         </div>
+                    @endforeach
+                </div>
+
+                {{-- Map embed, beside the offices on desktop --}}
+                @if ($mapEmbed)
+                    <div class="lg:h-full">
+                        <div class="contact-embed contact-embed-map h-full overflow-hidden rounded-2xl border border-line">{!! $mapEmbed !!}</div>
                     </div>
-                @endforeach
+                @endif
             </div>
         </x-ui.section>
     @endif
 
-    {{-- Map embed --}}
-    @if ($mapEmbed)
+    {{-- Map embed (only when there are no offices to sit beside) --}}
+    @if ($mapEmbed && $officeGroups->isEmpty())
         <x-ui.section :tight="true">
             <div class="contact-embed overflow-hidden rounded-2xl border border-line">{!! $mapEmbed !!}</div>
         </x-ui.section>

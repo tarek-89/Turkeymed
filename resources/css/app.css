@@ -203,6 +203,13 @@
         display: block;
     }
 
+    /* Map beside the office list: fill the column height on desktop. */
+    @media (min-width: 1024px) {
+        .contact-embed-map iframe {
+            height: 100% !important;
+        }
+    }
+
     /* Contact form embed: drop the generic min-height and the embed's own
        height attribute so the frame hugs the form instead of leaving a tall
        empty band under it. Tune --contact-form-height (default 580px; app.js overrides it when the provider reports its real height) if the form changes. */
